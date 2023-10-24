@@ -39,6 +39,8 @@ To use FuzzX, follow these simple steps:
    - `-owc`: Show the status code in the output file (optional).
    - `--files`: Change the search from directories to files (optional).
    - `-ex`: Extensions separated by (,) (optional, required if --files is used).
+   - `--cookies`: Add Cookies. Provides cookies for the HTTP request. You can specify multiple cookies as space-separated key-value pairs. (Optional)
+   - `-d` or `--delay`:Delay between requests (in seconds). Introduces a delay between requests to avoid overloading the server. Recommended use it with `-t 1` (Optional)
 
 4. Adjust the tool's settings to suit your needs and start the directory brute force attack.
 
