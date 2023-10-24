@@ -46,11 +46,14 @@ To use FuzzX, follow these simple steps:
 
 ## Features
 
-- Directory or file brute force attacks.
+- Directory and file brute force attacks.
 - Multi-threaded for speed and efficiency.
 - Supports various HTTP methods (GET, POST, PUT, DELETE, PATCH).
+- Customizable request time intervals.
 - Export scan results to a file.
-- Colorized output for easy readability
+- Colorized output for easy readability.
+- Option to add cookies to requests.
+
 
 
 ## Disclaimer
