@@ -154,12 +154,14 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     print(colorize_text("\nURL: ", "cyan", "bold")+colorize_text(f"{url}","white","bold"))
     separator("cyan")
 
+    print_lock = threading.Lock()
+
     threads = [] # List to store threads
 
     for part in parts:
 #        ttime = random.randint(0, ttime)
         # Create a thread to perform URL fuzzing on a part of the word list
-        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc))
+        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock))
         threads.append(thread) # Add the thread to the list of threads
 
     for thread in threads:
