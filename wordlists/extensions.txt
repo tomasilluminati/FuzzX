@@ -7,6 +7,7 @@
 .com
 .dll
 .exe
+.htb
 .htm
 .html
 .inc
@@ -19,6 +20,7 @@
 .php
 .phtml
 .pl
+.py
 .reg
 .sh
 .shtml
