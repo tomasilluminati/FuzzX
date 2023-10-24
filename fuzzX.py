@@ -39,9 +39,10 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
 
     xcookies = {}
 
-    for e in cookies:
-        key, value = e.split('=')
-        xcookies[key] = value
+    if cookies is not None:
+        for e in cookies:
+            key, value = e.split('=')
+            xcookies[key] = value
 
 
 
@@ -155,9 +156,14 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
         print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"DIR","white","bold"))
     
     print(colorize_text("\nTHREADS: ", "cyan", "bold")+colorize_text(f"{total_threads}","white","bold"))
-    if xcookies is not None:
+    if cookies is not None:
         print(colorize_text("\nCOOKIES: ", "cyan", "bold")+colorize_text(f"{xcookies}","white","bold"))
-
+    
+    if delay is not None:
+        if delay == 1:  
+            print(colorize_text("\nDELAY: ", "cyan", "bold")+colorize_text(f"{delay} Second","white","bold"))
+        else:
+            print(colorize_text("\nDELAY: ", "cyan", "bold")+colorize_text(f"{delay} Seconds","white","bold"))
     separator("cyan")
 
     print_lock = threading.Lock()
