@@ -52,7 +52,7 @@ def check_url(url):
 
 
 
-def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None):
+def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None):
     
     found_green = colorize_text("Found: ", "green", "bold")  # Formatting for "Found" in green
     found_yellow = colorize_text("Found: ", "yellow", "bold")  # Formatting for "Found" in yellow
@@ -65,17 +65,34 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
         sleep(random_sleep) 
   
         for line in wordlist:
-            url_2 = url + line  # Construct the URL by appending the line from the wordlist
+            url_2 = url + line # Construct the URL by appending the line from the wordlist
+            if delay > 0:
+                sleep(delay)   
             if method == 'GET':
-                req = requests.get(url_2)  # Send a GET request to the URL
+                if xcookies is not None:
+                    req = requests.get(url_2, cookies=xcookies)  # Send a GET request to the URL with cookies
+                else:
+                    req = requests.get(url_2)
             elif method == 'POST':
-                req = requests.post(url_2)  # Send a POST request to the URL
+                if xcookies is not None:
+                    req = requests.get(url_2, cookies=xcookies)  # Send a POST request to the URL with cookies
+                else:
+                    req = requests.post(url_2)  # Send a POST request to the URL
             elif method == 'PUT':
-                req = requests.put(url_2)  # Send a PUT request to the URL
+                if xcookies is not None:
+                    req = requests.put(url_2, cookies=xcookies)  # Send a PUT request to the URL with cookies
+                else:
+                    req = requests.put(url_2)  # Send a PUT request to the URL
             elif method == 'DELETE':
-                req = requests.delete(url_2)  # Send a DELETE request to the URL
+                if xcookies is not None:
+                    req = requests.delete(url_2, cookies=xcookies)  # Send a DELETE request to the URL with cookies
+                else:
+                    req = requests.delete(url_2)  # Send a DELETE request to the URL
             elif method == 'PATCH':
-                req = requests.patch(url_2)  # Send a PATCH request to the URL
+                if xcookies is not None:
+                    req = requests.patch(url_2, cookies=xcookies)  # Send a PATCH request to the URL with cookies
+                else:
+                    req = requests.patch(url_2)  # Send a PATCH request to the URL
 
             if req.status_code == 200:
                 num = colorize_text("200", "green")  # Format the status code "100" in green
