@@ -217,10 +217,9 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
 
     except requests.exceptions.TooManyRedirects:
-        stdout.write("\r" + " " * 100 + "\r")  # Clear the console line
+        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line
     except requests.exceptions.RequestException as e:
-        stdout.write("Connection Error:", e)  # Display a connection error message
-        stdout.write("\r" + " " * 100 + "\r")  # Clear the console line
+        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line
     except ValueError as e:
         print("Error:", e)  # Display a general error message
 
