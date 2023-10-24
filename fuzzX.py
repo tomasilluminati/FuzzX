@@ -32,31 +32,36 @@ def delete_and_create_empty_file(fpath):
 
 
 # Main function
-def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None):
+def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None):
     
     current_datetime = datetime.datetime.now()
     formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
+    xcookies = {}
+
+    for e in cookies:
+        key, value = e.split('=')
+        xcookies[key] = value
 
 
 
     # Set default values if not provided
     if total_threads is None:
-        total_threads = 4
+        total_threads = 10
     else:
         total_threads = int(total_threads)
 
     if total_threads < 1:
         print(colorize_text("Error: -t (Threads) must be greater than or equal to 1", "red"))
         exit()
-    elif total_threads > 40:
-        print(colorize_text("Error: -t (Threads) must be less than or equal to 40", "red"))
+    elif total_threads > 100:
+        print(colorize_text("Error: -t (Threads) must be less than or equal to 100", "red"))
         exit()
     
 
-#    if ttime is None:
-#        ttime = 0
-#    else:
-#        ttime = int(ttime)
+    if delay is None:
+        delay = 0
+
 
     if files != False:
         try:
@@ -106,13 +111,9 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             if is_valid_extension(ex):
                 flag = 1
                 pass
-
-
             else:
                 flag = 0
                 
-
-
         if flag == 1:
             combined = combine_names_with_extensions("./wordlists/default.txt", extensions)
 
@@ -146,12 +147,17 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     print(colorize_text("\n                        [!] Information\n", "yellow", "bold"))
     print(colorize_text("\nSTART TIME: ", "cyan", "bold")+colorize_text(f"{formatted_datetime}","white","bold"))
     print(colorize_text("\nWORDLIST: ", "cyan", "bold")+colorize_text(f"{wordlist}","white","bold"))
+    print(colorize_text("\nURL: ", "cyan", "bold")+colorize_text(f"{url}","white","bold"))
 
     if files == True:
         print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"FILES","white","bold"))
     else:
         print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"DIR","white","bold"))
-    print(colorize_text("\nURL: ", "cyan", "bold")+colorize_text(f"{url}","white","bold"))
+    
+    print(colorize_text("\nTHREADS: ", "cyan", "bold")+colorize_text(f"{total_threads}","white","bold"))
+    if xcookies is not None:
+        print(colorize_text("\nCOOKIES: ", "cyan", "bold")+colorize_text(f"{xcookies}","white","bold"))
+
     separator("cyan")
 
     print_lock = threading.Lock()
@@ -161,7 +167,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     for part in parts:
 #        ttime = random.randint(0, ttime)
         # Create a thread to perform URL fuzzing on a part of the word list
-        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock))
+        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay))
         threads.append(thread) # Add the thread to the list of threads
 
     for thread in threads:
@@ -198,11 +204,12 @@ if __name__ == "__main__":
     parser.add_argument("-u", required=True, help="Root URL (e.g., https://example.com)", type=str)
     parser.add_argument("-oN", required=False, help="Result File Name", type=str)
     parser.add_argument("-t", required=False, help="Quantity of Threads", type=int)
-#   parser.add_argument("--time", required=False, help="Time in seconds between Requests", type=int)
     parser.add_argument("-hm", required=False, help="Http Method", type=str)
     parser.add_argument('-owc', action='store_true', default=False, help="Show the status code in the output file")
     parser.add_argument('--files', action='store_true', default=False, help="Change the search from dir to files, (Needed -ex parameter)")
     parser.add_argument('-ex', type=str, nargs='?' if '--files' in argv else 1, help="Extensions separated by (,)")
+    parser.add_argument("--cookies", required=False, help="Add Cookies", type=str, nargs="*")
+    parser.add_argument("-d", "--delay", required=False, type=int, default=0, help="Delay between requests (in seconds)")
     args = parser.parse_args()
 
     # Get argument values and run the main function
@@ -210,10 +217,11 @@ if __name__ == "__main__":
     export = args.oN
     url = args.u
     threads = args.t
-#   ttime = args.time
     http_method = args.hm
     owc = args.owc
     files = args.files
     extensions = args.ex
+    cookies = args.cookies
+    delay = args.delay
 
-    main(wordlist, url, export, threads, http_method, owc, files, extensions)
+    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay)
