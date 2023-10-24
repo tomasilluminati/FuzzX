@@ -1,6 +1,6 @@
 # FuzzX - Directory Bruteforce Tool
 
-![GitHub License](https://img.shields.io/badge/License-MIT-green) ![FuzzX Tool](https://img.shields.io/badge/Tool-Fuzzing-blue)
+![GitHub License](https://img.shields.io/badge/License-MIT-green) ![FuzzX Tool](https://img.shields.io/badge/Tool-Fuzzing_Web-blue)
 
 ## Overview
 
