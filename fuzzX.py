@@ -60,7 +60,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
         exit()
     
 
-    if delay is None:
+    if delay is None or delay < 0:
         delay = 0
 
 
@@ -159,7 +159,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     if cookies is not None:
         print(colorize_text("\nCOOKIES: ", "cyan", "bold")+colorize_text(f"{xcookies}","white","bold"))
     
-    if delay is not None:
+    if delay is not None and delay != 0:
         if delay == 1:  
             print(colorize_text("\nDELAY: ", "cyan", "bold")+colorize_text(f"{delay} Second","white","bold"))
         else:
