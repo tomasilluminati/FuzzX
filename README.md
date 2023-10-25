@@ -40,16 +40,15 @@ To use FuzzX, follow these simple steps:
    - `-owc`: Show the status code in the output file (optional).
    - `--files`: Change the search from directories to files (optional).
    - `-ex`: Extensions separated by (,) (optional, required if --files is used).
-   - `--cookies`: Add Cookies. Provides cookies for the HTTP request. You can specify multiple cookies as space-separated key-value pairs. (Optional)
-   - `-d` or `--delay`: Delay between requests (in seconds). Introduces a delay between requests to avoid overloading the server. Recommended use it with `-t 1` (Optional)
-   - `-ch`: Allows users to define and include personalized HTTP headers in their requests, enabling tailored requests for specific requirements like authentication and content
-      negotiation (Optional).
-   - `--auth`: Enables providing authentication credentials to the server for accessing protected resources [Separated by (,) ] (Optional)
-   - `--redirect`: Allow or disallow redirections. If set, the program will follow redirections when encountered.(Optional)
+   - `--cookies`: Add Cookies. Provides cookies for the HTTP request. You can specify multiple cookies as space-separated key-value pairs. (Optional).
+   - `-d` or `--delay`: Delay between requests (in seconds). Introduces a delay between requests to avoid overloading the server. Recommended use it with `-t 1` (Optional).
+   - `-ch`: Allows users to define and include personalized HTTP headers in their requests, enabling tailored requests for specific requirements like authentication and content negotiation (Optional).
+   - `--auth`: Enables providing authentication credentials to the server for accessing protected resources [Separated by (,) ] (Optional).
+   - `--redirect`: Allow or disallow redirections. If set, the program will follow redirections when encountered (Optional).
 
-   - `--timeout`: Set a timeout in seconds for HTTP requests in seconds. This parameter allows you to specify a maximum waiting time for receiving a response before considering the request timed out. (Optional)
+   - `--timeout`: Set a timeout in seconds for HTTP requests in seconds. This parameter allows you to specify a maximum waiting time for receiving a response before considering the request timed out (Optional).
 
-   - `--ssl`: Check the authenticity of the SSL certificate on the server. Enabling this option will verify the SSL certificate when making requests.(Optional)
+   - `--ssl`: Check the authenticity of the SSL certificate on the server. Enabling this option will verify the SSL certificate when making requests (Optional).
 
 4. Adjust the tool's settings to suit your needs and start the directory brute force attack.
 
