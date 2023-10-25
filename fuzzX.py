@@ -33,7 +33,7 @@ def delete_and_create_empty_file(fpath):
 
 
 # Main function
-def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, auth=None, data=None):
+def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, auth=None, data=None, xredirect=False, tout=10, ssl=False):
     
     current_datetime = datetime.datetime.now()
     formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
@@ -41,7 +41,14 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     xcookies = {}
     xcustom_headers = {}
     xdata = {}
-    
+
+    if tout is not None:
+        if tout <=0:
+            tout = 1
+        flag_timeout = True
+    else:
+        tout = 10
+        flag_timeout = False
 
     if cookies is not None:
         try:
@@ -208,6 +215,9 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     if cookies is not None:
         print(colorize_text("\nCOOKIES: ", "cyan", "bold")+colorize_text(f"{xcookies}","white","bold"))
 
+    if ssl:
+        print(colorize_text("\nSSL: ", "cyan", "bold")+colorize_text(f"TRUE","white","bold"))
+
     if custom_headers is not None:
         print(colorize_text("\nCUSTOM HEADERS: ", "cyan", "bold")+colorize_text(f"{xcustom_headers}","white","bold"))
     
@@ -223,6 +233,12 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             print(colorize_text("\nDELAY: ", "cyan", "bold")+colorize_text(f"{delay} Second","white","bold"))
         else:
             print(colorize_text("\nDELAY: ", "cyan", "bold")+colorize_text(f"{delay} Seconds","white","bold"))
+    
+
+
+    if flag_timeout:
+        print(colorize_text("\nTIMEOUT: ", "cyan", "bold")+colorize_text(f"{tout} Seconds","white","bold"))
+
     separator("cyan")
 
     print("\n")
@@ -234,7 +250,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     for part in parts:
 #        ttime = random.randint(0, ttime)
         # Create a thread to perform URL fuzzing on a part of the word list
-        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, auth, xdata))
+        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, auth, xdata, xredirect, tout, ssl))
         threads.append(thread) # Add the thread to the list of threads
 
     for thread in threads:
@@ -291,6 +307,9 @@ if __name__ == "__main__":
     parser.add_argument("-ch", required=False, help="Add Custom Headers", type=str, nargs="*")
     parser.add_argument("--auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
     parser.add_argument("--data", required=False, help="Add data for POST, PUT and PATCH requests", type=str, nargs="*")
+    parser.add_argument('--redirect', action='store_true', default=False, help="Allow redirections")
+    parser.add_argument("--timeout", required=False, help="Set the timeout for the request", type=int)
+    parser.add_argument('--ssl', action='store_true', default=False, help="Check the SSL certificate")
     args = parser.parse_args()
 
     # Get argument values and run the main function
@@ -307,5 +326,8 @@ if __name__ == "__main__":
     custom_headers = args.ch
     auth = args.auth
     data = args.data
+    xredirect = args.redirect
+    tout = args.timeout
+    ssl = args.ssl
 
-    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, auth, data)
+    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, auth, data, xredirect, tout, ssl)
