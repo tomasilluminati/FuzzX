@@ -33,28 +33,43 @@ def delete_and_create_empty_file(fpath):
 
 
 # Main function
-def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, auth=None):
+def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, auth=None, data=None):
     
     current_datetime = datetime.datetime.now()
     formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
     xcookies = {}
     xcustom_headers = {}
+    xdata = {}
+    
 
     if cookies is not None:
-        for e in cookies:
-            key, value = e.split('=')
-            xcookies[key] = value
+        try:
+            for e in cookies:
+                key, value = e.split('=')
+                xcookies[key] = value
+        except ValueError:
+            print(colorize_text("Error: --cookies needs some data in format (example=example) to work", "red"))
+            exit()
+
 
     if custom_headers is not None:
-        for ch in custom_headers:
-            key_ch, value_ch = ch.split("=")
-            xcustom_headers[key_ch] = value_ch
+        try:
+            for ch in custom_headers:
+                key_ch, value_ch = ch.split("=")
+                xcustom_headers[key_ch] = value_ch
+        except:
+            print(colorize_text("Error: -ch needs some data in format (example=example) to work", "red"))
+            exit()
 
     if auth is not None:
-        auth = auth[0].split(",")
-        if len(auth)>2:
-            print(colorize_text("Error: --auth can only receive 2 parameters <username:password>", "red"))
+        try:
+            auth = auth[0].split(",")
+            if len(auth)>2:
+                print(colorize_text("Error: --auth can only receive 2 parameters <username:password>", "red"))
+                exit()
+        except ValueError:
+            print(colorize_text("Error: --auth needs some data in format <username:password> to work", "red"))
             exit()
 
     # Set default values if not provided
@@ -82,11 +97,22 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             print(colorize_text("Error: You need to add the -ex parameter", "red"))
             exit()
 
+    if (data is not None and http_method is not None and http_method.upper() not in ["PUT", "PATCH", "POST"]) or (data is not None and http_method is None):
+        print(colorize_text("Error: --data is only valid with a valid HTTP method (PUT, PATCH, or POST)","red"))
+        exit()
+
+
+    if data is not None:
+        try:
+            for d in data:
+                key, value = d.split('=')
+                xdata[key] = value
+        except ValueError:
+            print(colorize_text("Error: --data needs some data in format (example=example) to work", "red"))
+            exit()
+
     # Show Main Banner
     init_banner()
-
-    
-    
 
     if http_method is None:
         http_method = 'GET'
@@ -185,6 +211,9 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     if custom_headers is not None:
         print(colorize_text("\nCUSTOM HEADERS: ", "cyan", "bold")+colorize_text(f"{xcustom_headers}","white","bold"))
     
+    if data is not None:
+        print(colorize_text("\nDATA: ", "cyan", "bold")+colorize_text(f"{xdata}","white","bold"))
+
     if auth is not None:
         print(colorize_text("\nUSERNAME: ", "cyan", "bold")+colorize_text(f"{auth[0]}","white","bold"))
         print(colorize_text("\nPASSWORD: ", "cyan", "bold")+colorize_text(f"{auth[1]}","white","bold"))
@@ -205,7 +234,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     for part in parts:
 #        ttime = random.randint(0, ttime)
         # Create a thread to perform URL fuzzing on a part of the word list
-        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, auth))
+        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, auth, xdata))
         threads.append(thread) # Add the thread to the list of threads
 
     for thread in threads:
@@ -261,6 +290,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--delay", required=False, type=int, default=0, help="Delay between requests (in seconds)")
     parser.add_argument("-ch", required=False, help="Add Custom Headers", type=str, nargs="*")
     parser.add_argument("--auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
+    parser.add_argument("--data", required=False, help="Add data for POST, PUT and PATCH requests", type=str, nargs="*")
     args = parser.parse_args()
 
     # Get argument values and run the main function
@@ -276,5 +306,6 @@ if __name__ == "__main__":
     delay = args.delay
     custom_headers = args.ch
     auth = args.auth
+    data = args.data
 
-    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, auth)
+    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, auth, data)
