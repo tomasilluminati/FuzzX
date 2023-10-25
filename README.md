@@ -34,14 +34,14 @@ To use FuzzX, follow these simple steps:
    - `-w`: Path to the wordlist file (.txt). (If not provided, the default wordlist will be used.)
    - `-u`: Root URL (e.g., https://example.com).
    - `-oN`: Result File Name (optional).
-   - `-t`: Quantity of Threads (optional, default is 4).
+   - `-t`: Quantity of Threads (optional, default is 10).
    - `-hm`: HTTP Method (optional, default is GET).
    - `-owc`: Show the status code in the output file (optional).
    - `--files`: Change the search from directories to files (optional).
    - `-ex`: Extensions separated by (,) (optional, required if --files is used).
    - `--cookies`: Add Cookies. Provides cookies for the HTTP request. You can specify multiple cookies as space-separated key-value pairs. (Optional)
    - `-d` or `--delay`:Delay between requests (in seconds). Introduces a delay between requests to avoid overloading the server. Recommended use it with `-t 1` (Optional)
-   - `-ch` Allows users to define and include personalized HTTP headers in their requests, enabling tailored requests for specific requirements like authentication and content           negotiation.
+   - `-ch` Allows users to define and include personalized HTTP headers in their requests, enabling tailored requests for specific requirements like authentication and content negotiation (Optional).
 
 4. Adjust the tool's settings to suit your needs and start the directory brute force attack.
 
@@ -54,6 +54,7 @@ To use FuzzX, follow these simple steps:
 - Export scan results to a file.
 - Colorized output for easy readability.
 - Option to add cookies to requests.
+- Option to add Custom Headers to requests.
 
 
 
