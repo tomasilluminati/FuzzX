@@ -5,28 +5,6 @@ import random
 from time import sleep
 from sys import stdout
 
-def send_request(method, url, xcookies=None, xcustom_headers=None, xdata=None, auth=None, username=None, password=None):
-    headers = xcustom_headers if isinstance(xcustom_headers, dict) else {}
-    cookies = xcookies if isinstance(xcookies, dict) else {}
-
-    if auth:
-        auth = HTTPBasicAuth(username, password)
-
-    if method == 'GET':
-        return requests.get(url, headers=headers, cookies=cookies, auth=auth)
-    elif method == 'POST':
-        data = xdata if isinstance(xdata, dict) else {}
-        return requests.post(url, headers=headers, cookies=cookies, data=data, auth=auth)
-    elif method == 'PUT':
-        data = xdata if isinstance(xdata, dict) else {}
-        return requests.put(url, headers=headers, cookies=cookies, data=data, auth=auth)
-    elif method == 'DELETE':
-        return requests.delete(url, headers=headers, cookies=cookies, auth=auth)
-    elif method == 'PATCH':
-        data = xdata if isinstance(xdata, dict) else {}
-        return requests.patch(url, headers=headers, cookies=cookies, data=data, auth=auth)
-
-
 def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, auth=None, xdata=None):
     found_green = colorize_text("Found: ", "green", "bold")
     found_yellow = colorize_text("Found: ", "yellow", "bold")
@@ -54,10 +32,8 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
             if method == 'GET':
                 req = requests.get(url_2, cookies=cookies, headers=headers, auth=auth)
-                print(req.text)
             elif method == 'POST':
                 req = requests.post(url_2, cookies=cookies, headers=headers, data=data, auth=auth)
-                print(req.text)
             elif method == 'PUT':
                 req = requests.put(url_2, cookies=cookies, headers=headers, data=data, auth=auth)
             elif method == 'DELETE':
