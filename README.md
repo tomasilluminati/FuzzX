@@ -28,7 +28,7 @@ To use FuzzX, follow these simple steps:
 3. Run the tool with the following command:
 
    ```bash
-   python fuzzX.py -u <target_url> [-w <wordlist>] [-oN <output_file>] [-t <threads>] [-hm <http_method>] [-owc] [--files] [-ex] [--cookies <example=example>] [-d or --delay <int>] [-ch <example=example>] [--auth <username,password>]
+   python fuzzX.py -u <target_url> [-w <wordlist>] [-oN <output_file>] [-t <threads>] [-hm <http_method>] [--data <data=data>] [-owc] [--files] [-ex] [--cookies <example=example>] [-d or --delay <int>] [-ch <example=example>] [--auth <username,password>]
    ```
 
    - `-w`: Path to the wordlist file (.txt). (If not provided, the default wordlist will be used.)
@@ -36,6 +36,7 @@ To use FuzzX, follow these simple steps:
    - `-oN`: Result File Name (optional).
    - `-t`: Quantity of Threads (optional, default is 10).
    - `-hm`: HTTP Method (optional, default is GET).
+   - `--data`: Add the data for the (POST, PUT and PATCH) request (optional).
    - `-owc`: Show the status code in the output file (optional).
    - `--files`: Change the search from directories to files (optional).
    - `-ex`: Extensions separated by (,) (optional, required if --files is used).
@@ -52,6 +53,7 @@ To use FuzzX, follow these simple steps:
 - Directory and file brute force attacks.
 - Multi-threaded for speed and efficiency.
 - Supports various HTTP methods (GET, POST, PUT, DELETE, PATCH).
+- POST, PUT and PATCH support data addition.
 - Customizable request time intervals.
 - Export scan results to a file.
 - Colorized output for easy readability.
