@@ -77,4 +77,4 @@ By using this program, you acknowledge and accept this disclaimer of liability.
 
 *This project is licensed under the [MIT License](LICENSE).*
 
-*Visit our GitHub repository: [FuzzX](https://github.com/tomasilluminatiFuzzX)*
+*Visit our GitHub repository: [FuzzX](https://github.com/tomasilluminati/FuzzX)*
