@@ -5,184 +5,65 @@ import random
 from time import sleep
 from sys import stdout
 
-def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, auth=None):
-    
-    found_green = colorize_text("Found: ", "green", "bold")  # Formatting for "Found" in green
-    found_yellow = colorize_text("Found: ", "yellow", "bold")  # Formatting for "Found" in yellow
-    if auth is not None:
-        username = auth[0]
-        password = auth[1]
+def send_request(method, url, xcookies=None, xcustom_headers=None, xdata=None, auth=None, username=None, password=None):
+    headers = xcustom_headers if isinstance(xcustom_headers, dict) else {}
+    cookies = xcookies if isinstance(xcookies, dict) else {}
 
+    if auth:
+        auth = HTTPBasicAuth(username, password)
+
+    if method == 'GET':
+        return requests.get(url, headers=headers, cookies=cookies, auth=auth)
+    elif method == 'POST':
+        data = xdata if isinstance(xdata, dict) else {}
+        return requests.post(url, headers=headers, cookies=cookies, data=data, auth=auth)
+    elif method == 'PUT':
+        data = xdata if isinstance(xdata, dict) else {}
+        return requests.put(url, headers=headers, cookies=cookies, data=data, auth=auth)
+    elif method == 'DELETE':
+        return requests.delete(url, headers=headers, cookies=cookies, auth=auth)
+    elif method == 'PATCH':
+        data = xdata if isinstance(xdata, dict) else {}
+        return requests.patch(url, headers=headers, cookies=cookies, data=data, auth=auth)
+
+
+def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, auth=None, xdata=None):
+    found_green = colorize_text("Found: ", "green", "bold")
+    found_yellow = colorize_text("Found: ", "yellow", "bold")
+    if auth is not None:
+        username, password = auth  # Unpack auth tuple
 
     try:
         if method not in ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']:
-            method = 'GET'  # Default to 'GET' if an invalid HTTP method is provided
+            method = 'GET'
 
         random_sleep = random.uniform(0, 8)
-        sleep(random_sleep) 
-  
+        sleep(random_sleep)
+
         for line in wordlist:
-            url_2 = url + line # Construct the URL by appending the line from the wordlist
+            url_2 = url + line  # Construct the URL by appending the line from the wordlist
             if delay > 0:
-                sleep(delay)   
+                sleep(delay)
+
+            headers = xcustom_headers if xcustom_headers else {}
+            cookies = xcookies if xcookies else {}
+            data = xdata if xdata else {}
+
+            if auth is not None:
+                auth = HTTPBasicAuth(username, password)
+
             if method == 'GET':
-                if xcookies is not None:
-                    
-                    if xcustom_headers is not None: # Send a GET request to the URL with custom headers and cookies
-
-                        if auth is not None:
-                            req = requests.get(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password)) # Send a GET request to the URL with custom headers and cookies and auth
-                        else:
-                            req = requests.get(url_2, cookies=xcookies, headers=xcustom_headers) # Send a GET request to the URL with custom headers and cookies
-
-
-
-                    else:
-                        if auth is not None:
-                            req = requests.get(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) # Send a GET request to the URL with cookies and auth
-                        else:
-                            req = requests.get(url_2, cookies=xcookies) #Send a GET request to the URL with cookies
-                    
-                else:
-                    if xcustom_headers is not None:
-                        if auth is not None:
-                            req = requests.get(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  # Send a GET request to the URL with custom headers and auth
-                        else:
-                            req = requests.get(url_2, headers=xcustom_headers) # Send a GET request to the URL with custom headers
-                    else:
-                        if auth is not None:
-                            req = requests.get(url_2, auth=(username,password)) # Send a GET request with auth
-                        else:
-                            req = requests.get(url_2) # Send a GET request 
-
+                req = requests.get(url_2, cookies=cookies, headers=headers, auth=auth)
+                print(req.text)
             elif method == 'POST':
-                if xcookies is not None:
-                    
-                    if xcustom_headers is not None: 
-
-                        if auth is not None:
-                            req = requests.post(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))
-                        else:
-                            req = requests.post(url_2, cookies=xcookies, headers=xcustom_headers)
-
-
-
-                    else:
-                        if auth is not None:
-                            req = requests.post(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password))
-                        else:
-                            req = requests.post(url_2, cookies=xcookies)
-                    
-                else:
-                    if xcustom_headers is not None:
-                        if auth is not None:
-                            req = requests.post(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password)) 
-                        else:
-                            req = requests.post(url_2, headers=xcustom_headers)
-                    else:
-                        if auth is not None:
-                            req = requests.post(url_2, auth=(username,password))
-                        else:
-                            req = requests.post(url_2) 
-
+                req = requests.post(url_2, cookies=cookies, headers=headers, data=data, auth=auth)
+                print(req.text)
             elif method == 'PUT':
-                if xcookies is not None:
-                    
-                    if xcustom_headers is not None: 
-
-                        if auth is not None:
-                            req = requests.put(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))
-                        else:
-                            req = requests.put(url_2, cookies=xcookies, headers=xcustom_headers)
-
-
-
-                    else:
-                        if auth is not None:
-                            req = requests.put(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) 
-                        else:
-                            req = requests.put(url_2, cookies=xcookies)
-                    
-                else:
-                    if xcustom_headers is not None:
-                        if auth is not None:
-                            req = requests.put(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  
-                        else:
-                            req = requests.put(url_2, headers=xcustom_headers)
-                    else:
-                        if auth is not None:
-                            req = requests.put(url_2, auth=(username,password))
-                        else:
-                            req = requests.put(url_2) 
-
+                req = requests.put(url_2, cookies=cookies, headers=headers, data=data, auth=auth)
             elif method == 'DELETE':
-                if xcookies is not None:
-                    
-                    if xcustom_headers is not None: 
-
-                        if auth is not None:
-                            req = requests.delete(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))
-
-                        else:
-                            req = requests.delete(url_2, cookies=xcookies, headers=xcustom_headers)
-
-
-
-                    else:
-                        if auth is not None:
-                            req = requests.delete(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) 
-                        else:
-                            req = requests.delete(url_2, cookies=xcookies)
-                    
-                else:
-                    if xcustom_headers is not None:
-                        if auth is not None:
-                            req = requests.delete(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  
-                        else:
-                            req = requests.delete(url_2, headers=xcustom_headers)
-                    else:
-                        if auth is not None:
-                            req = requests.delete(url_2, auth=(username,password))
-
-                        else:
-                            req = requests.delete(url_2) 
-
-
-
+                req = requests.delete(url_2, cookies=cookies, headers=headers, auth=auth)
             elif method == 'PATCH':
-
-                if xcookies is not None:
-                    
-                    if xcustom_headers is not None:
-
-                        if auth is not None:
-                            req = requests.patch(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))
-
-                        else:
-                            req = requests.patch(url_2, cookies=xcookies, headers=xcustom_headers)
-
-
-
-                    else:
-                        if auth is not None:
-                            req = requests.patch(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) 
-
-                        else:
-                            req = requests.patch(url_2, cookies=xcookies)
-                    
-                else:
-                    if xcustom_headers is not None:
-                        if auth is not None:
-                            req = requests.patch(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  
-
-                        else:
-                            req = requests.patch(url_2, headers=xcustom_headers)
-                    else:
-                        if auth is not None:
-                            req = requests.patch(url_2, auth=(username,password))
-
-                        else:
-                            req = requests.patch(url_2) 
+                req = requests.patch(url_2, cookies=cookies, headers=headers, data=data, auth=auth)
 
 
             if req.status_code == 200:
