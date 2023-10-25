@@ -1,18 +1,18 @@
 from modules.banners_and_style import colorize_text
 import requests
+from requests.auth import HTTPBasicAuth
 import random
 from time import sleep
 from sys import stdout
 
-
-
-
-
-
-def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None):
+def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, auth=None):
     
     found_green = colorize_text("Found: ", "green", "bold")  # Formatting for "Found" in green
     found_yellow = colorize_text("Found: ", "yellow", "bold")  # Formatting for "Found" in yellow
+    if auth is not None:
+        username = auth[0]
+        password = auth[1]
+
 
     try:
         if method not in ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']:
@@ -28,58 +28,124 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
             if method == 'GET':
                 if xcookies is not None:
                     
-                    if xcustom_headers is not None:
-                        req = requests.get(url_2, cookies=xcookies, headers=xcustom_headers) # Send a GET request to the URL with custom headers and cookies
+                    if xcustom_headers is not None: # Send a GET request to the URL with custom headers and cookies
+
+                        if auth is not None:
+                            req = requests.get(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password)) # Send a GET request to the URL with custom headers and cookies and auth
+                        else:
+                            req = requests.get(url_2, cookies=xcookies, headers=xcustom_headers) # Send a GET request to the URL with custom headers and cookies
+
+
+
                     else:
-                        req = requests.get(url_2, cookies=xcookies) # Send a GET request to the URL with cookies
+                        if auth is not None:
+                            req = requests.get(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) # Send a GET request to the URL with cookies and auth
+                        else:
+                            req = requests.get(url_2, cookies=xcookies) #Send a GET request to the URL with cookies
                     
                 else:
                     if xcustom_headers is not None:
-                        req = requests.get(url_2, headers=xcustom_headers)  # Send a GET request to the URL with custom headers
+                        if auth is not None:
+                            req = requests.get(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  # Send a GET request to the URL with custom headers and auth
+                        else:
+                            req = requests.get(url_2, headers=xcustom_headers) # Send a GET request to the URL with custom headers
                     else:
-                        req = requests.get(url_2) # Send a GET request 
+                        if auth is not None:
+                            req = requests.get(url_2, auth=(username,password)) # Send a GET request with auth
+                        else:
+                            req = requests.get(url_2) # Send a GET request 
 
             elif method == 'POST':
                 if xcookies is not None:
                     
-                    if xcustom_headers is not None:
-                        req = requests.post(url_2, cookies=xcookies, headers=xcustom_headers) 
+                    if xcustom_headers is not None: # Send a GET request to the URL with custom headers and cookies
+
+                        if auth is not None:
+                            req = requests.post(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))
+                        else:
+                            req = requests.post(url_2, cookies=xcookies, headers=xcustom_headers)
+
+
+
                     else:
-                        req = requests.post(url_2, cookies=xcookies)
+                        if auth is not None:
+                            req = requests.post(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) # Send a GET request to the URL with cookies
+                        else:
+                            req = requests.post(url_2, cookies=xcookies)
                     
                 else:
                     if xcustom_headers is not None:
-                        req = requests.post(url_2, headers=xcustom_headers)  
+                        if auth is not None:
+                            req = requests.post(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  # Send a GET request to the URL with custom headers
+                        else:
+                            req = requests.post(url_2, headers=xcustom_headers)
                     else:
-                        req = requests.post(url_2)
+                        if auth is not None:
+                            req = requests.post(url_2, auth=(username,password))
+                        else:
+                            req = requests.post(url_2) # Send a GET request
 
             elif method == 'PUT':
                 if xcookies is not None:
                     
-                    if xcustom_headers is not None:
-                        req = requests.put(url_2, cookies=xcookies, headers=xcustom_headers)  
+                    if xcustom_headers is not None: 
+
+                        if auth is not None:
+                            req = requests.put(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))
+                        else:
+                            req = requests.put(url_2, cookies=xcookies, headers=xcustom_headers)
+
+
+
                     else:
-                        req = requests.put(url_2, cookies=xcookies)
+                        if auth is not None:
+                            req = requests.put(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) 
+                        else:
+                            req = requests.put(url_2, cookies=xcookies)
                     
                 else:
                     if xcustom_headers is not None:
-                        req = requests.put(url_2, headers=xcustom_headers)  
+                        if auth is not None:
+                            req = requests.put(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  
+                        else:
+                            req = requests.put(url_2, headers=xcustom_headers)
                     else:
-                        req = requests.put(url_2)
+                        if auth is not None:
+                            req = requests.put(url_2, auth=(username,password))
+                        else:
+                            req = requests.put(url_2) 
 
             elif method == 'DELETE':
                 if xcookies is not None:
                     
-                    if xcustom_headers is not None:
-                        req = requests.delete(url_2, cookies=xcookies, headers=xcustom_headers) 
+                    if xcustom_headers is not None: 
+
+                        if auth is not None:
+                            req = requests.delete(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))
+
+                        else:
+                            req = requests.delete(url_2, cookies=xcookies, headers=xcustom_headers)
+
+
+
                     else:
-                        req = requests.delete(url_2, cookies=xcookies)
+                        if auth is not None:
+                            req = requests.delete(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) 
+                        else:
+                            req = requests.delete(url_2, cookies=xcookies)
                     
                 else:
                     if xcustom_headers is not None:
-                        req = requests.delete(url_2, headers=xcustom_headers) 
+                        if auth is not None:
+                            req = requests.delete(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  
+                        else:
+                            req = requests.delete(url_2, headers=xcustom_headers)
                     else:
-                        req = requests.delete(url_2)
+                        if auth is not None:
+                            req = requests.delete(url_2, auth=(username,password))
+
+                        else:
+                            req = requests.delete(url_2) 
 
 
 
@@ -88,23 +154,49 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                 if xcookies is not None:
                     
                     if xcustom_headers is not None:
-                        req = requests.patch(url_2, cookies=xcookies, headers=xcustom_headers)  # Send a GET request to the URL with cookies
+
+                        if auth is not None:
+                            req = requests.patch(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))
+
+                        else:
+                            req = requests.patch(url_2, cookies=xcookies, headers=xcustom_headers)
+
+
+
                     else:
-                        req = requests.patch(url_2, cookies=xcookies) # Send a GET request to the URL with cookies
+                        if auth is not None:
+                            req = requests.patch(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) 
+
+                        else:
+                            req = requests.patch(url_2, cookies=xcookies)
                     
                 else:
                     if xcustom_headers is not None:
-                        req = requests.patch(url_2, headers=xcustom_headers)  
+                        if auth is not None:
+                            req = requests.patch(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  
+
+                        else:
+                            req = requests.patch(url_2, headers=xcustom_headers)
                     else:
-                        req = requests.patch(url_2)   # Send a PATCH request to the URL
+                        if auth is not None:
+                            req = requests.patch(url_2, auth=(username,password))
+
+                        else:
+                            req = requests.patch(url_2) 
 
 
             if req.status_code == 200:
                 num = colorize_text("200", "green")  # Format the status code "100" in green
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
-                    stdout.write(f"{found_green}{url_2} [{num}]\n")  # Display the found URL with status code
-                    stdout.write("\n")  # Add an empty line
+
+                    if auth is not None:
+                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write(f"{found_green}{url_2} [{num}] {colorize_text('[Valid Authentication]', 'green', 'bold')}\n")  # Display the found URL with status code
+                        stdout.write("\n")  # Add an empty line
+                    else:
+                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write(f"{found_green}{url_2} [{num}]\n")  # Display the found URL with status code
+                        stdout.write("\n")  # Add an empty line
                 if not owc:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")  # Append the found URL to the output file
@@ -118,9 +210,14 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
                 num = colorize_text("201", "green")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{found_green}{url_2} [{num}]\n")
-                    stdout.write("\n")
+                    if auth is not None:
+                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write(f"{found_green}{url_2} [{num}] {colorize_text('[Created][Valid Authentication]', 'green', 'bold')}\n")  # Display the found URL with status code
+                        stdout.write("\n")  # Add an empty line
+                    else:
+                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Created','red','bold')}]\n")  # Display the found URL with status code
+                        stdout.write("\n")  # Add an empty line
                 if owc == False:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")
@@ -130,11 +227,16 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
             elif req.status_code == 204:
 
-                num = colorize_text("204 (No Content)", "green")
+                num = colorize_text("204", "green")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{found_green}{url_2} [{num}]\n")
-                    stdout.write("\n")
+                    if auth is not None:
+                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write(f"{found_green}{url_2} [{num}] {colorize_text('[No Content][Valid Authentication]', 'green', 'bold')}\n")  # Display the found URL with status code
+                        stdout.write("\n")  # Add an empty line
+                    else:
+                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('No Content','green','bold')}]\n")  # Display the found URL with status code
+                        stdout.write("\n")  # Add an empty line
                 if owc == False:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")
@@ -143,8 +245,6 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                         file.write(f"\n{url_2} [204]")
                     
             elif req.status_code == 400:
-                num = colorize_text("400 (Bad Request)", "red")
-                analysis = colorize_text("Analizing:", "cyan", "bold")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
                     stdout.write(f"{analysis} {url_2}")
@@ -152,11 +252,12 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
 
             elif req.status_code == 401:
-                num = colorize_text("401 (Unauthorized)", "yellow")
+                num = colorize_text("401", "yellow")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{found_yellow}{url_2} [{num}]\n")
-                    stdout.write("\n")
+                    stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                    stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Unauthorized','red','bold')}]\n")  # Display the found URL with status code
+                    stdout.write("\n")  # Add an empty line
+                    stdout.flush() 
                 if owc == False:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")
@@ -165,12 +266,13 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                         file.write(f"\n{url_2} [401]")
             
             elif req.status_code == 403:
-                num = colorize_text("403 (Forbidden)", "yellow")
+                num = colorize_text("403", "yellow")
                 
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{found_yellow}{url_2} [{num}]\n")
-                    stdout.write("\n")
+                    stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                    stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Forbidden','red','bold')}]\n")  # Display the found URL with status code
+                    stdout.write("\n")  # Add an empty line
+                    stdout.flush() 
                 if owc == False:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")
@@ -187,56 +289,41 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                     stdout.flush()
 
             elif req.status_code == 500:
-                num = colorize_text("500 (Internal Server Error)", "red")
+                num = colorize_text("500", "red")
                 analysis = colorize_text("Analizing:", "cyan", "bold")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{analysis} {url_2}")
-                    stdout.flush()
+                    stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Internal Server Error','red','bold')}]\n")  # Display the found URL with status code
+                    stdout.write("\n")  # Add an empty line
+                    stdout.flush() 
                 if owc == False:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")
-                else:
-                    with open(output_file, 'a') as file:
-                        file.write(f"\n{url_2} [500]")
-                    stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{url_2} [{num}]\n")
-                    stdout.write("\n")
 
             elif req.status_code == 502:
-                num = colorize_text("502 (Bad Gateway)", "red")
+                num = colorize_text("502", "red")
                 analysis = colorize_text("Analizing:", "cyan", "bold")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{analysis} {url_2}")
+                    stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Bad Gateway','red','bold')}]\n")
+                    stdout.write("\n")
                     stdout.flush()            
                 if owc == False:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")
-                else:
-                    with open(output_file, 'a') as file:
-                        file.write(f"\n{url_2} [502]")
-                    stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{url_2} [{num}]\n")
-                    stdout.write("\n")
+
 
             elif req.status_code == 503:
-                num = colorize_text("503 (Service Unavailable)", "red")
+                num = colorize_text("503", "red")
                 analysis = colorize_text("Analizing:", "cyan", "bold")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{analysis} {url_2}")
+                    stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Service Unavailable','red','bold')}]\n")
+                    stdout.write("\n")
                     stdout.flush()
-                if owc == False:
+                if owc == True:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")
-                else:
-                    with open(output_file, 'a') as file:
-                        file.write(f"\n{url_2} [503]")
-                    stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{url_2} [{num}]\n")
-                    stdout.write("\n")
-
 
     except requests.exceptions.TooManyRedirects:
         stdout.write("\r" + " " * 70 + "\r")  # Clear the console line
