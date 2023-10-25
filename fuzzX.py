@@ -227,6 +227,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
         if files is True:
             print(colorize_text(f"\n                          {result} Files Found", "red", "bold"))
         else:
+            stdout.write("\r" + " " * 70 + "\r")
             separator("cyan")
             print(colorize_text(f"\n                          {result} Directories Found", "green", "bold"))
 
