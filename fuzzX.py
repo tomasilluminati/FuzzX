@@ -3,6 +3,7 @@
 # Import necessary libraries and modules
 from os import path, remove, rename
 from modules.functions import *
+from modules.functions_2 import *
 from modules.banners_and_style import *
 from sys import exit, argv
 from shutil import copy
@@ -32,18 +33,23 @@ def delete_and_create_empty_file(fpath):
 
 
 # Main function
-def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None):
+def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None):
     
     current_datetime = datetime.datetime.now()
     formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
     xcookies = {}
+    xcustom_headers = {}
 
     if cookies is not None:
         for e in cookies:
             key, value = e.split('=')
             xcookies[key] = value
 
+    if custom_headers is not None:
+        for ch in custom_headers:
+            key_ch, value_ch = ch.split("=")
+            xcustom_headers[key_ch] = value_ch
 
 
     # Set default values if not provided
@@ -158,6 +164,9 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     print(colorize_text("\nTHREADS: ", "cyan", "bold")+colorize_text(f"{total_threads}","white","bold"))
     if cookies is not None:
         print(colorize_text("\nCOOKIES: ", "cyan", "bold")+colorize_text(f"{xcookies}","white","bold"))
+
+    if custom_headers is not None:
+        print(colorize_text("\nCUSTOM HEADERS: ", "cyan", "bold")+colorize_text(f"{xcustom_headers}","white","bold"))
     
     if delay is not None and delay != 0:
         if delay == 1:  
@@ -173,7 +182,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     for part in parts:
 #        ttime = random.randint(0, ttime)
         # Create a thread to perform URL fuzzing on a part of the word list
-        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay))
+        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers))
         threads.append(thread) # Add the thread to the list of threads
 
     for thread in threads:
@@ -216,6 +225,7 @@ if __name__ == "__main__":
     parser.add_argument('-ex', type=str, nargs='?' if '--files' in argv else 1, help="Extensions separated by (,)")
     parser.add_argument("--cookies", required=False, help="Add Cookies", type=str, nargs="*")
     parser.add_argument("-d", "--delay", required=False, type=int, default=0, help="Delay between requests (in seconds)")
+    parser.add_argument("-ch", required=False, help="Add Custom Headers", type=str, nargs="*")
     args = parser.parse_args()
 
     # Get argument values and run the main function
@@ -229,5 +239,6 @@ if __name__ == "__main__":
     extensions = args.ex
     cookies = args.cookies
     delay = args.delay
+    custom_headers = args.ch
 
-    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay)
+    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers)
