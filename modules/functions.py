@@ -1,3 +1,4 @@
+# Import necessary modules
 from modules.banners_and_style import colorize_text
 import requests
 from requests.auth import HTTPBasicAuth
@@ -5,41 +6,84 @@ import random
 from time import sleep
 from sys import stdout
 
-def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, auth=None, xdata=None):
+# Define the main function 'fuzz' with various parameters
+def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, auth=None, xdata=None, xredirect=False, tout=10, ssl=False):
+    # Define text formatting for display messages
     found_green = colorize_text("Found: ", "green", "bold")
     found_yellow = colorize_text("Found: ", "yellow", "bold")
+    
+    # Unpack authentication information
     if auth is not None:
-        username, password = auth  # Unpack auth tuple
+        username, password = auth
 
     try:
+        # Ensure 'method' is a valid HTTP method
         if method not in ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']:
             method = 'GET'
 
+        # Introduce random sleep to simulate human-like interaction
         random_sleep = random.uniform(0, 8)
         sleep(random_sleep)
 
+        # Iterate through the wordlist
         for line in wordlist:
             url_2 = url + line  # Construct the URL by appending the line from the wordlist
+
+            # Introduce a delay if specified
             if delay > 0:
                 sleep(delay)
 
+            # Initialize headers, cookies, and data
             headers = xcustom_headers if xcustom_headers else {}
             cookies = xcookies if xcookies else {}
             data = xdata if xdata else {}
 
+            # Handle HTTP Basic Authentication
             if auth is not None:
                 auth = HTTPBasicAuth(username, password)
 
+            # Perform an HTTP request based on the specified method
             if method == 'GET':
-                req = requests.get(url_2, cookies=cookies, headers=headers, auth=auth)
+                try:
+                    if ssl == True:
+                        req = requests.get(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl)
+                    else:
+                        req = requests.get(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout)
+                except TimeoutError:
+                    break
             elif method == 'POST':
-                req = requests.post(url_2, cookies=cookies, headers=headers, data=data, auth=auth)
+                try:
+                    if ssl == True:
+                        req = requests.post(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl, data=xdata)
+                    else:
+                        req = requests.post(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, data=xdata)
+                except TimeoutError:
+                    break
             elif method == 'PUT':
-                req = requests.put(url_2, cookies=cookies, headers=headers, data=data, auth=auth)
+                try:
+                    if ssl == True:
+                        req = requests.put(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl, data=xdata)
+                    else:
+                        req = requests.put(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, data=xdata)
+                except TimeoutError:
+                    break
             elif method == 'DELETE':
-                req = requests.delete(url_2, cookies=cookies, headers=headers, auth=auth)
+                try:
+                    if ssl == True:
+                        req = requests.delete(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl)
+                    else:
+                        req = requests.delete(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout)
+                except TimeoutError:
+                    break
             elif method == 'PATCH':
-                req = requests.patch(url_2, cookies=cookies, headers=headers, data=data, auth=auth)
+                try:
+                    if ssl == True:
+                        req = requests.patch(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl, data=xdata)
+                    else:
+                        req = requests.patch(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, data=xdata)
+                except TimeoutError:
+                    break
+            
 
 
             if req.status_code == 200:
