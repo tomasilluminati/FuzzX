@@ -57,7 +57,7 @@ To use FuzzX, follow these simple steps:
 - Colorized output for easy readability.
 - Option to add cookies to requests.
 - Option to add Custom Headers to requests.
-- Authentication support with username and password. (HTTPBasicAuth)
+- Authentication support with username and password (HTTPBasicAuth).
   
 
 
