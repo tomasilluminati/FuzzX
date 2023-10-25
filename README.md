@@ -67,7 +67,7 @@ To use FuzzX, follow these simple steps:
 - Authentication support with username and password (HTTPBasicAuth).
 - Allow or disallow redirections.
 - Set a timeout for HTTP requests in seconds.
-- Check the authenticity of the SSL certificate on the server.
+- Check the SSL certificate on the server.
   
 
 
