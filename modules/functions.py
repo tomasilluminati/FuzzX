@@ -58,7 +58,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
             elif method == 'POST':
                 if xcookies is not None:
                     
-                    if xcustom_headers is not None: # Send a GET request to the URL with custom headers and cookies
+                    if xcustom_headers is not None: 
 
                         if auth is not None:
                             req = requests.post(url_2, cookies=xcookies, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))
@@ -69,21 +69,21 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
                     else:
                         if auth is not None:
-                            req = requests.post(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password)) # Send a GET request to the URL with cookies
+                            req = requests.post(url_2, cookies=xcookies, auth=HTTPBasicAuth(username,password))
                         else:
                             req = requests.post(url_2, cookies=xcookies)
                     
                 else:
                     if xcustom_headers is not None:
                         if auth is not None:
-                            req = requests.post(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password))  # Send a GET request to the URL with custom headers
+                            req = requests.post(url_2, headers=xcustom_headers, auth=HTTPBasicAuth(username,password)) 
                         else:
                             req = requests.post(url_2, headers=xcustom_headers)
                     else:
                         if auth is not None:
                             req = requests.post(url_2, auth=(username,password))
                         else:
-                            req = requests.post(url_2) # Send a GET request
+                            req = requests.post(url_2) 
 
             elif method == 'PUT':
                 if xcookies is not None:
@@ -186,7 +186,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
 
             if req.status_code == 200:
-                num = colorize_text("200", "green")  # Format the status code "100" in green
+                num = colorize_text("200", "green")  # Format the status code "200" in green
                 with print_lock:
 
                     if auth is not None:
