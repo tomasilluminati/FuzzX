@@ -105,13 +105,25 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     # Delete and create an empty file for scanning
     delete_and_create_empty_file("./scanning/scanning.txt")
 
+    
+
     if files == False:
         # Split the wordlist file into parts if provided, or use the default one
         if wordlist is not None:
-            parts = split_file_into_parts(wordlist, total_threads)
+            wordlist_len = count_lines_in_file(wordlist)
+            if total_threads > wordlist_len:
+                parts = split_file_into_parts(wordlist, wordlist_len)
+                total_threads = wordlist_len
+            else:
+                parts = split_file_into_parts(wordlist, total_threads)
         else:
             wordlist = "./wordlists/default.txt"
-            parts = split_file_into_parts(wordlist, total_threads)
+            wordlist_len = count_lines_in_file(wordlist)
+            if total_threads > wordlist_len:
+                parts = split_file_into_parts(wordlist, wordlist_len)
+                total_threads = wordlist_len
+            else:
+                parts = split_file_into_parts(wordlist, total_threads)
 
     else:
         flag = 0
@@ -184,6 +196,8 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             print(colorize_text("\nDELAY: ", "cyan", "bold")+colorize_text(f"{delay} Seconds","white","bold"))
     separator("cyan")
 
+    print("\n")
+
     print_lock = threading.Lock()
 
     threads = [] # List to store threads
@@ -205,6 +219,16 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     remove("./scanning/scanning.txt")
     remove("./scanning/scanning_2.txt")
     rename("./scanning/scanning_3.txt", "./scanning/scanning.txt")
+
+    result = count_lines_in_file("./scanning/scanning.txt")
+    
+
+    if result >= 0:
+        if files is True:
+            print(colorize_text(f"\n                          {result} Files Found", "red", "bold"))
+        else:
+            separator("cyan")
+            print(colorize_text(f"\n                          {result} Directories Found", "green", "bold"))
 
     # If an export file is provided, copy the result
     if export is not None:
