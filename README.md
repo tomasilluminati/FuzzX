@@ -28,7 +28,7 @@ To use FuzzX, follow these simple steps:
 3. Run the tool with the following command:
 
    ```bash
-   python fuzzX.py -u <target_url> [-w <wordlist>] [-oN <output_file>] [-t <threads>] [-hm <http_method>] [-owc] [--files] [-ex] [--cookies <example=example>] [-d or --delay <int>] [-ch <example=example>]
+   python fuzzX.py -u <target_url> [-w <wordlist>] [-oN <output_file>] [-t <threads>] [-hm <http_method>] [-owc] [--files] [-ex] [--cookies <example=example>] [-d or --delay <int>] [-ch <example=example>] [--auth <username,password>]
    ```
 
    - `-w`: Path to the wordlist file (.txt). (If not provided, the default wordlist will be used.)
@@ -40,8 +40,10 @@ To use FuzzX, follow these simple steps:
    - `--files`: Change the search from directories to files (optional).
    - `-ex`: Extensions separated by (,) (optional, required if --files is used).
    - `--cookies`: Add Cookies. Provides cookies for the HTTP request. You can specify multiple cookies as space-separated key-value pairs. (Optional)
-   - `-d` or `--delay`:Delay between requests (in seconds). Introduces a delay between requests to avoid overloading the server. Recommended use it with `-t 1` (Optional)
-   - `-ch` Allows users to define and include personalized HTTP headers in their requests, enabling tailored requests for specific requirements like authentication and content negotiation (Optional).
+   - `-d` or `--delay`: Delay between requests (in seconds). Introduces a delay between requests to avoid overloading the server. Recommended use it with `-t 1` (Optional)
+   - `-ch`: Allows users to define and include personalized HTTP headers in their requests, enabling tailored requests for specific requirements like authentication and content
+      negotiation (Optional).
+   - `--auth`: Enables providing authentication credentials to the server for accessing protected resources [Separated by (,) ] (Optional)
 
 4. Adjust the tool's settings to suit your needs and start the directory brute force attack.
 
@@ -55,6 +57,8 @@ To use FuzzX, follow these simple steps:
 - Colorized output for easy readability.
 - Option to add cookies to requests.
 - Option to add Custom Headers to requests.
+- Authentication support with username and password. (HTTPBasicAuth)
+  
 
 
 
