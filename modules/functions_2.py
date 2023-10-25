@@ -1,3 +1,14 @@
+def count_lines_in_file(file_name):
+    try:
+        with open(file_name, 'r') as file:
+            lines = file.readlines()
+            if not lines:
+                return 0
+            else:
+                return int(len(lines))
+    except FileNotFoundError:
+        pass
+
 
 def split_file_into_parts(file, num_parts):
     # Open the file and read all the lines into a list
