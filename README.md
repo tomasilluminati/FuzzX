@@ -28,7 +28,7 @@ To use FuzzX, follow these simple steps:
 3. Run the tool with the following command:
 
    ```bash
-   python fuzzX.py -u <target_url> [-w <wordlist>] [-oN <output_file>] [-t <threads>] [-hm <http_method>] [--data <data=data>] [-owc] [--files] [-ex] [--cookies <example=example>] [-d or --delay <int>] [-ch <example=example>] [--auth <username,password>] [--redirect] [--timeout <int>] [--ssl]
+   python fuzzX.py -u <target_url> [-w <wordlist>] [-oN <output_file>] [-t <threads>] [-hm <http_method>] [--data <data=data>] [-owc] [--files] [-ex] [--cookies <example=example>] [-d or --delay <int>] [-ch <example=example>] [--auth <username,password>] [--xredirect] [--timeout <int>] [--ssl]
    ```
 
    - `-w`: Path to the wordlist file (.txt). (If not provided, the default wordlist will be used.)
@@ -44,7 +44,7 @@ To use FuzzX, follow these simple steps:
    - `-d` or `--delay`: Delay between requests (in seconds). Introduces a delay between requests to avoid overloading the server. Recommended use it with `-t 1` (Optional).
    - `-ch`: Allows users to define and include personalized HTTP headers in their requests, enabling tailored requests for specific requirements like authentication and content negotiation (Optional).
    - `--auth`: Enables providing authentication credentials to the server for accessing protected resources [Separated by (,) ] (Optional).
-   - `--redirect`: Allow or disallow redirections. If set, the program will follow redirections when encountered (Optional).
+   - `--xredirect`: Disallow redirections. If set, the program will not follow redirects when it finds them (optional).
 
    - `--timeout`: Set a timeout in seconds for HTTP requests in seconds. This parameter allows you to specify a maximum waiting time for receiving a response before considering the request timed out (Optional).
 
