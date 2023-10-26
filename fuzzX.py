@@ -278,9 +278,11 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     result = count_lines_in_file("./scanning/scanning.txt")
     
 
-    if result >= 0:
-        if files is True:
-            print(colorize_text(f"\n                          {result} Files Found", "red", "bold"))
+    if files is True:
+        if result <= 0:
+            stdout.write("\r" + " " * 70 + "\r")
+            separator("cyan")
+            print(colorize_text("\n                          0 Files Found", "red", "bold"))
         else:
             stdout.write("\r" + " " * 70 + "\r")
             separator("cyan")
