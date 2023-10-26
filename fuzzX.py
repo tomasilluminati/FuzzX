@@ -33,8 +33,13 @@ def delete_and_create_empty_file(fpath):
 
 
 # Main function
-def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, auth=None, data=None, xredirect=False, tout=10, ssl=False):
+def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, auth=None, data=None, xredirect=True, tout=10, ssl=False):
     
+    if xredirect is True:
+        xredirect = False
+    elif xredirect is False:
+        xredirect = True
+
     current_datetime = datetime.datetime.now()
     formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -215,6 +220,11 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     if cookies is not None:
         print(colorize_text("\nCOOKIES: ", "cyan", "bold")+colorize_text(f"{xcookies}","white","bold"))
 
+    if xredirect == True:
+        print(colorize_text("\nREDIRECTION: ", "cyan", "bold")+colorize_text(f"TRUE","white","bold"))
+    else:
+        print(colorize_text("\nREDIRECTION: ", "cyan", "bold")+colorize_text(f"FALSE","white","bold"))
+
     if ssl:
         print(colorize_text("\nSSL: ", "cyan", "bold")+colorize_text(f"TRUE","white","bold"))
 
@@ -307,9 +317,9 @@ if __name__ == "__main__":
     parser.add_argument("-ch", required=False, help="Add Custom Headers", type=str, nargs="*")
     parser.add_argument("--auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
     parser.add_argument("--data", required=False, help="Add data for POST, PUT and PATCH requests", type=str, nargs="*")
-    parser.add_argument('--redirect', action='store_true', default=False, help="Allow redirections")
+    parser.add_argument('--xredirect', action='store_true', default=False, help="Allow redirections")
     parser.add_argument("--timeout", required=False, help="Set the timeout for the request", type=int)
-    parser.add_argument('--ssl', action='store_true', default=False, help="Check the SSL certificate")
+    parser.add_argument('--ssl', action='store_false', default=False, help="Check the SSL certificate")
     args = parser.parse_args()
 
     # Get argument values and run the main function
@@ -326,7 +336,7 @@ if __name__ == "__main__":
     custom_headers = args.ch
     auth = args.auth
     data = args.data
-    xredirect = args.redirect
+    xredirect = args.xredirect
     tout = args.timeout
     ssl = args.ssl
 
