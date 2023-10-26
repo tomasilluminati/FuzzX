@@ -103,7 +103,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                         file.write(f"\n{url_2}")  # Append the found URL to the output file
                 else:
                     with open(output_file, 'a') as file:
-                        file.write(f"\n{url_2} [100]")  # Append the found URL with status code to the output file
+                        file.write(f"\n{url_2} [200]")  # Append the found URL with status code to the output file
 
  # Similar blocks for other HTTP status codes (201, 204, 400, 401, 403, 404, 500, 502, 503)
 
