@@ -103,7 +103,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                         file.write(f"\n{url_2}")  # Append the found URL to the output file
                 else:
                     with open(output_file, 'a') as file:
-                        file.write(f"\n{url_2} [200]")  # Append the found URL with status code to the output file
+                        file.write(f"\n{url_2} [100]")  # Append the found URL with status code to the output file
 
  # Similar blocks for other HTTP status codes (201, 204, 400, 401, 403, 404, 500, 502, 503)
 
@@ -200,6 +200,9 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                 if owc == False:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")
+                else:
+                    with open(output_file, 'a') as file:
+                        file.write(f"\n{url_2} [500]")
 
             elif req.status_code == 502:
                 num = colorize_text("502", "red")
@@ -211,7 +214,10 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                     stdout.flush()            
                 if owc == False:
                     with open(output_file, 'a') as file:
-                        file.write(f"\n{url_2}")
+                        file.write(f"\n{url_2} ")
+                else:
+                    with open(output_file, 'a') as file:
+                        file.write(f"\n{url_2} [502]")
 
 
             elif req.status_code == 503:
@@ -222,9 +228,12 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Service Unavailable','red','bold')}]\n")
                     stdout.write("\n")
                     stdout.flush()
-                if owc == True:
+                if owc == False:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2}")
+                else:
+                    with open(output_file, 'a') as file:
+                        file.write(f"\n{url_2} [503]")
 
     except requests.exceptions.TooManyRedirects:
         stdout.write("\r" + " " * 70 + "\r")  # Clear the console line
