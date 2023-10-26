@@ -5,13 +5,12 @@ from os import path, remove, rename
 from modules.functions import *
 from modules.functions_2 import *
 from modules.banners_and_style import *
-import multiprocessing
 from sys import exit, argv
 from shutil import copy
 from re import match
 import datetime
 import argparse
-import threading
+import multiprocessing
 
 
 def is_valid_extension(extension):
