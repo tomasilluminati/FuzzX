@@ -5,6 +5,7 @@ from os import path, remove, rename
 from modules.functions import *
 from modules.functions_2 import *
 from modules.banners_and_style import *
+import multiprocessing
 from sys import exit, argv
 from shutil import copy
 from re import match
@@ -216,7 +217,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     else:
         print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"DIR","white","bold"))
     
-    print(colorize_text("\nTHREADS: ", "cyan", "bold")+colorize_text(f"{total_threads}","white","bold"))
+    print(colorize_text("\nPROCESS: ", "cyan", "bold")+colorize_text(f"{total_threads}","white","bold"))
     if cookies is not None:
         print(colorize_text("\nCOOKIES: ", "cyan", "bold")+colorize_text(f"{xcookies}","white","bold"))
 
@@ -253,21 +254,20 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
 
     print("\n")
 
-    print_lock = threading.Lock()
+    print_lock = multiprocessing.Lock()
 
-    threads = [] # List to store threads
+    processes = []
 
     for part in parts:
-#        ttime = random.randint(0, ttime)
-        # Create a thread to perform URL fuzzing on a part of the word list
-        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, auth, xdata, xredirect, tout, ssl))
-        threads.append(thread) # Add the thread to the list of threads
+        # Crea un proceso para realizar el fuzzing en una parte de la lista de palabras
+        process = multiprocessing.Process(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, auth, xdata, xredirect, tout, ssl))
+        processes.append(process)
 
-    for thread in threads:
-        thread.start() # Start each thread
+    for process in processes:
+        process.start()
 
-    for thread in threads:
-        thread.join() # Wait for each thread to finish its execution
+    for process in processes:
+        process.join()
 
     process_file_error("./scanning/scanning.txt", "./scanning/scanning_2.txt")
     remove_blank_lines("./scanning/scanning_2.txt", "./scanning/scanning_3.txt")
