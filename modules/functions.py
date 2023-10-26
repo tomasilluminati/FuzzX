@@ -7,7 +7,7 @@ from time import sleep
 from sys import stdout
 
 # Define the main function 'fuzz' with various parameters
-def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, auth=None, xdata=None, xredirect=False, tout=10, ssl=False):
+def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, auth=None, xdata=None, xredirect=True, tout=10, ssl=False):
     # Define text formatting for display messages
     found_green = colorize_text("Found: ", "green", "bold")
     found_yellow = colorize_text("Found: ", "yellow", "bold")
