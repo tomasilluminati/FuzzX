@@ -33,7 +33,7 @@ def delete_and_create_empty_file(fpath):
 
 
 # Main function
-def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, auth=None, data=None, xredirect=True, tout=10, ssl=False):
+def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, basic_auth=None, data=None, xredirect=True, tout=10, ssl=False, proxies=None, digest_auth=None, proxy_auth=None, subdomains=False):
     
     if xredirect is True:
         xredirect = False
@@ -46,6 +46,29 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     xcookies = {}
     xcustom_headers = {}
     xdata = {}
+    xproxies = {}
+
+
+    if files is False:
+        if subdomains is not False:
+
+            if subdomains is True:
+                
+                subdomains_list = generate_subdomain_combinations(url, "./wordlists/subdomains.txt")
+                write_list_to_file(subdomains_list, "./scanning/sub_dom_tmp.txt")
+            
+            else:
+                try:
+                    subdomains_list = generate_subdomain_combinations(url, subdomains)
+                    write_list_to_file(subdomains_list, "./scanning/sub_dom_tmp.txt")
+                except:
+                    print(colorize_text("Error: Invalid subdomains wordlist path", "red"))
+                    exit()
+    else:
+        if subdomains is not False:
+            print(colorize_text("Error: You can only use --files mode or --subdomains mode", "red"))
+            exit()
+
 
     if tout is not None:
         if tout <=0:
@@ -74,14 +97,33 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             print(colorize_text("Error: -ch needs some data in format (example=example) to work", "red"))
             exit()
 
-    if auth is not None:
+
+    if basic_auth is not None:
         try:
-            auth = auth[0].split(",")
-            if len(auth)>2:
-                print(colorize_text("Error: --auth can only receive 2 parameters <username:password>", "red"))
+            basic_auth = basic_auth[0].split(",")
+            if len(basic_auth)>2:
+                print(colorize_text("Error: --basic-auth can only receive 2 parameters <username,password>", "red"))
                 exit()
         except ValueError:
-            print(colorize_text("Error: --auth needs some data in format <username:password> to work", "red"))
+            print(colorize_text("Error: --basic-auth needs some data in format <username,password> to work", "red"))
+            exit()
+    if digest_auth is not None:
+        try:
+            digest_auth = digest_auth[0].split(",")
+            if len(digest_auth)>2:
+                print(colorize_text("Error: --digest-auth can only receive 2 parameters <username,password>", "red"))
+                exit()
+        except ValueError:
+            print(colorize_text("Error: --digest-auth needs some data in format <username,password> to work", "red"))
+            exit()
+    if proxy_auth is not None:
+        try:
+            proxy_auth = proxy_auth[0].split(",")
+            if len(proxy_auth)>2:
+                print(colorize_text("Error: --proxy-auth can only receive 2 parameters <username,password>", "red"))
+                exit()
+        except ValueError:
+            print(colorize_text("Error: --proxy-auth needs some data in format <username,password> to work", "red"))
             exit()
 
     # Set default values if not provided
@@ -123,6 +165,37 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             print(colorize_text("Error: --data needs some data in format (example=example) to work", "red"))
             exit()
 
+
+
+    if proxies is not None:
+        if len(proxies) != 0:
+
+            proxies_split = proxies[0].split(",")
+
+            for x in proxies_split:
+                if x[:7] == "http://":
+                    if x[-1] == '/':
+                        x = x[:-1]
+                    xproxies["http"] = x
+
+                elif x[:8] == "https://":
+                    if x[-1] == '/':
+                        x = x[:-1]
+                    xproxies["https"] = x
+
+                elif x[:6] == "ftp://":
+                    if x[-1] == '/':
+                        x = x[:-1]
+                    xproxies["ftp"] = x
+
+                else:
+                    print(colorize_text("Error: The format must be ftp/http/https://proxy:port","red"))
+                    exit()
+        else:
+            print(colorize_text("Error: --proxy needs some data in format ftp/http/https://proxy:port separated by (,) (One of each max.) to work", "red"))
+            exit()
+
+    
     # Show Main Banner
     init_banner()
 
@@ -144,67 +217,84 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     delete_and_create_empty_file("./scanning/scanning.txt")
 
     
+    if subdomains is False:
+        if files == False:
+            # Split the wordlist file into parts if provided, or use the default one
+            if wordlist is not None:
+                wordlist_len = count_lines_in_file(wordlist)
+                if total_threads > wordlist_len:
+                    parts = split_file_into_parts(wordlist, wordlist_len)
+                    total_threads = wordlist_len
+                else:
+                    parts = split_file_into_parts(wordlist, total_threads)
+            else:
+                wordlist = "./wordlists/default.txt"
+                wordlist_len = count_lines_in_file(wordlist)
+                if total_threads > wordlist_len:
+                    parts = split_file_into_parts(wordlist, wordlist_len)
+                    total_threads = wordlist_len
+                else:
+                    parts = split_file_into_parts(wordlist, total_threads)
 
-    if files == False:
-        # Split the wordlist file into parts if provided, or use the default one
-        if wordlist is not None:
-            wordlist_len = count_lines_in_file(wordlist)
-            if total_threads > wordlist_len:
-                parts = split_file_into_parts(wordlist, wordlist_len)
-                total_threads = wordlist_len
-            else:
-                parts = split_file_into_parts(wordlist, total_threads)
         else:
-            wordlist = "./wordlists/default.txt"
-            wordlist_len = count_lines_in_file(wordlist)
-            if total_threads > wordlist_len:
-                parts = split_file_into_parts(wordlist, wordlist_len)
-                total_threads = wordlist_len
+            flag = 0
+
+            for ex in extensions:
+                ex.strip()
+
+            for ex in extensions:
+                if is_valid_extension(ex):
+                    flag = 1
+                    pass
+                else:
+                    flag = 0
+
+            if flag == 1:
+                combined = combine_names_with_extensions("./wordlists/default.txt", extensions)
+
+                if wordlist is not None:
+                    combined = combine_names_with_extensions(wordlist, extensions)
+                else:
+                    wordlist = "./wordlists/default.txt"
+                    combined = combine_names_with_extensions(wordlist, extensions)
+
+                write_list_to_file(combined, "./wordlists/f_dict_w_ex.txt")
+
+                parts = split_file_into_parts("./wordlists/f_dict_w_ex.txt", total_threads)
+
+                remove("./wordlists/f_dict_w_ex.txt")
             else:
-                parts = split_file_into_parts(wordlist, total_threads)
+
+                ex_file = read_file_to_list("./wordlists/extensions.txt")
+
+                if wordlist is not None:
+                    combined = combine_names_with_extensions(wordlist, ex_file)
+                else:
+                    wordlist = "./wordlists/default.txt"
+                    combined = combine_names_with_extensions(wordlist, ex_file)
+
+                write_list_to_file(combined, "./wordlists/f_dict_w_ex.txt")
+
+                parts = split_file_into_parts("./wordlists/f_dict_w_ex.txt", total_threads)
+
+                remove("./wordlists/f_dict_w_ex.txt")
 
     else:
-        flag = 0
         
-        for ex in extensions:
-            ex.strip()
-        
-        for ex in extensions:
-            if is_valid_extension(ex):
-                flag = 1
-                pass
-            else:
-                flag = 0
-                
-        if flag == 1:
-            combined = combine_names_with_extensions("./wordlists/default.txt", extensions)
-
-            if wordlist is not None:
-                combined = combine_names_with_extensions(wordlist, extensions)
-            else:
-                wordlist = "./wordlists/default.txt"
-                combined = combine_names_with_extensions(wordlist, extensions)
-
-            write_list_to_file(combined, "./wordlists/f_dict_w_ex.txt")
-
-            parts = split_file_into_parts("./wordlists/f_dict_w_ex.txt", total_threads)
-
-            remove("./wordlists/f_dict_w_ex.txt")
+        wordlist = "./scanning/sub_dom_tmp.txt"
+        wordlist_len = count_lines_in_file(wordlist)
+        if total_threads > wordlist_len:
+            parts = split_file_into_parts(wordlist, wordlist_len)
+            total_threads = wordlist_len
         else:
-            
-            ex_file = read_file_to_list("./wordlists/extensions.txt")
+            parts = split_file_into_parts(wordlist, total_threads)
 
-            if wordlist is not None:
-                combined = combine_names_with_extensions(wordlist, ex_file)
-            else:
-                wordlist = "./wordlists/default.txt"
-                combined = combine_names_with_extensions(wordlist, ex_file)
+            remove("./scanning/sub_dom_tmp.txt")
 
-            write_list_to_file(combined, "./wordlists/f_dict_w_ex.txt")
+        wordlist = "./wordlists/subdomains.txt"
 
-            parts = split_file_into_parts("./wordlists/f_dict_w_ex.txt", total_threads)
+    
 
-            remove("./wordlists/f_dict_w_ex.txt")
 
     print(colorize_text("\n                        [!] Information\n", "yellow", "bold"))
     print(colorize_text("\nSTART TIME: ", "cyan", "bold")+colorize_text(f"{formatted_datetime}","white","bold"))
@@ -213,17 +303,19 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
 
     if files == True:
         print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"FILES","white","bold"))
+    elif files != True and subdomains is True:
+        print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"SUBDOMAINS","white","bold"))
     else:
         print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"DIR","white","bold"))
     
     print(colorize_text("\nTHREADS: ", "cyan", "bold")+colorize_text(f"{total_threads}","white","bold"))
     if cookies is not None:
-        print(colorize_text("\nCOOKIES: ", "cyan", "bold")+colorize_text(f"{xcookies}","white","bold"))
+        print(colorize_text("\nCOOKIES: ", "cyan", "bold")+colorize_text(f"{xcookies[key]}","white","bold"))
 
     if xredirect == True:
-        print(colorize_text("\nREDIRECTION: ", "cyan", "bold")+colorize_text(f"TRUE","white","bold"))
+        print(colorize_text("\nREDIRECTIONS: ", "cyan", "bold")+colorize_text(f"TRUE","green","bold"))
     else:
-        print(colorize_text("\nREDIRECTION: ", "cyan", "bold")+colorize_text(f"FALSE","white","bold"))
+        print(colorize_text("\nREDIRECTIONS: ", "cyan", "bold")+colorize_text(f"FALSE","red","bold"))
 
     if ssl:
         print(colorize_text("\nSSL: ", "cyan", "bold")+colorize_text(f"TRUE","white","bold"))
@@ -234,9 +326,15 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     if data is not None:
         print(colorize_text("\nDATA: ", "cyan", "bold")+colorize_text(f"{xdata}","white","bold"))
 
-    if auth is not None:
-        print(colorize_text("\nUSERNAME: ", "cyan", "bold")+colorize_text(f"{auth[0]}","white","bold"))
-        print(colorize_text("\nPASSWORD: ", "cyan", "bold")+colorize_text(f"{auth[1]}","white","bold"))
+    if basic_auth is not None:
+        print(colorize_text("\nUSERNAME: ", "cyan", "bold")+colorize_text(f"{basic_auth[0]}","white","bold"))
+        print(colorize_text("\nPASSWORD: ", "cyan", "bold")+colorize_text(f"{basic_auth[1]}","white","bold"))
+    if digest_auth is not None:
+        print(colorize_text("\nUSERNAME: ", "cyan", "bold")+colorize_text(f"{digest_auth[0]}","white","bold"))
+        print(colorize_text("\nPASSWORD: ", "cyan", "bold")+colorize_text(f"{digest_auth[1]}","white","bold"))
+    if proxy_auth is not None:
+        print(colorize_text("\nUSERNAME: ", "cyan", "bold")+colorize_text(f"{proxy_auth[0]}","white","bold"))
+        print(colorize_text("\nPASSWORD: ", "cyan", "bold")+colorize_text(f"{proxy_auth[1]}","white","bold"))
 
     if delay is not None and delay != 0:
         if delay == 1:  
@@ -244,7 +342,8 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
         else:
             print(colorize_text("\nDELAY: ", "cyan", "bold")+colorize_text(f"{delay} Seconds","white","bold"))
     
-
+    if proxies is not None and proxies != 0:
+        print(colorize_text("\nPROXIES: ", "cyan", "bold")+colorize_text(f"{xproxies}","white","bold"))
 
     if flag_timeout:
         print(colorize_text("\nTIMEOUT: ", "cyan", "bold")+colorize_text(f"{tout} Seconds","white","bold"))
@@ -258,9 +357,8 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     threads = [] # List to store threads
 
     for part in parts:
-#        ttime = random.randint(0, ttime)
         # Create a thread to perform URL fuzzing on a part of the word list
-        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, auth, xdata, xredirect, tout, ssl))
+        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, basic_auth, xdata, xredirect, tout, ssl, xproxies, digest_auth, proxy_auth, subdomains))
         threads.append(thread) # Add the thread to the list of threads
 
     for thread in threads:
@@ -327,11 +425,15 @@ if __name__ == "__main__":
     parser.add_argument("--cookies", required=False, help="Add Cookies", type=str, nargs="*")
     parser.add_argument("-d", "--delay", required=False, type=int, default=0, help="Delay between requests (in seconds)")
     parser.add_argument("-ch", required=False, help="Add Custom Headers", type=str, nargs="*")
-    parser.add_argument("--auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
     parser.add_argument("--data", required=False, help="Add data for POST, PUT and PATCH requests", type=str, nargs="*")
-    parser.add_argument('--xredirect', action='store_true', default=False, help="Allow redirections")
+    parser.add_argument('--no-redirect', action='store_true', default=False, help="Disallow redirections")
     parser.add_argument("--timeout", required=False, help="Set the timeout for the request", type=int)
     parser.add_argument('--ssl', action='store_false', default=False, help="Check the SSL certificate")
+    parser.add_argument("--proxy", required=False, help="Add proxies ftp/http/https://proxy:port separated by (,) (One of each max.)", type=str, nargs="*")
+    parser.add_argument("--basic-auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
+    parser.add_argument("--digest-auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
+    parser.add_argument("--proxy-auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
+    parser.add_argument("--subdomains", nargs='?', const=True, type=str, default=False, help="Allows fuzzing by subdomains <Path to subdomains list (Optional)>")
     args = parser.parse_args()
 
     # Get argument values and run the main function
@@ -346,10 +448,15 @@ if __name__ == "__main__":
     cookies = args.cookies
     delay = args.delay
     custom_headers = args.ch
-    auth = args.auth
     data = args.data
-    xredirect = args.xredirect
+    xredirect = args.no_redirect
     tout = args.timeout
     ssl = args.ssl
+    proxies = args.proxy
+    basic_auth = args.basic_auth
+    digest_auth = args.digest_auth
+    proxy_auth = args.proxy_auth
+    subdomains = args.subdomains
+    
 
-    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, auth, data, xredirect, tout, ssl)
+    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, basic_auth, data, xredirect, tout, ssl, proxies, digest_auth, proxy_auth, subdomains)
