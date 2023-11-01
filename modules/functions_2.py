@@ -46,6 +46,19 @@ def check_url(url):
         else:
             url = url+"/"
             return url
+    elif url.startswith("ftp"):
+        if url.endswith("/"):
+            return url
+        else:
+            url = url+"/"
+            return url
+        
+    elif url.startswith("ftps"):
+        if url.endswith("/"):
+            return url
+        else:
+            url = url+"/"
+            return url
     else:
         url = "https://"+url
         if url.endswith("/"):
@@ -111,5 +124,28 @@ def read_file_to_list(file_name):
                 my_list.append(line.strip())  # strip() removes leading and trailing whitespace characters
         return my_list
     except FileNotFoundError:
-        print(f"The file '{file_name}' was not found.")
+        print(f"The file '{file_name}' was not found")
         return []
+
+def generate_subdomain_combinations(url, txt_file):
+    with open(txt_file, 'r') as file:
+        subdomains = file.read().splitlines()
+
+    if url.startswith("http://"):
+        url_prefix = "http://"
+        url = url[len(url_prefix):]
+    elif url.startswith("https://"):
+        url_prefix = "https://"
+        url = url[len(url_prefix):]
+    elif url.startswith("ftp://"):
+        url_prefix = "ftp://"
+        url = url[len(url_prefix):]
+    elif url.startswith("ftps://"):
+        url_prefix = "ftps://"
+        url = url[len(url_prefix):]
+    else:
+        url_prefix = ""
+
+    combinations = [f"{url_prefix}{subdomain}.{url}" for subdomain in subdomains]
+
+    return combinations
