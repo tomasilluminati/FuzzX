@@ -49,7 +49,7 @@ To use FuzzX, follow these simple steps:
    - `--proxy`: Add FTP/HTTP/HTTPS proxies in the format proxy:port separated by commas (,). You can specify up to one proxy of each type at most (Optional).
    - `--basic-auth`: Add credentials for authentication in the format user,password separated by commas (,). This argument is used for basic authentication (Optional).
    - `--digest-auth`: Add credentials for authentication in the format user,password separated by commas (,). This argument is used for authentication using the Digest method (Optional).
-   - `--proxy-auth`: Add credentials for proxy authentication in the format user,password separated by commas (,). You can provide multiple user and password combinations (Optional).
+   - `--proxy-auth`: Add credentials for proxy authentication in the format user,password separated by commas (,) (Optional).
    - `--subdomains`: Allows fuzzing by subdomains. You can provide an optional path to the subdomains list file. If a path is provided, the program will use those subdomains for fuzzing (Optional).
 
 
