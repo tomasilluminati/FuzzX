@@ -1,20 +1,24 @@
 # Import necessary modules
 from modules.banners_and_style import colorize_text
 import requests
-from requests.auth import HTTPBasicAuth
+from requests.auth import HTTPBasicAuth, HTTPDigestAuth, HTTPProxyAuth
 import random
 from time import sleep
 from sys import stdout
 
 # Define the main function 'fuzz' with various parameters
-def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, auth=None, xdata=None, xredirect=True, tout=10, ssl=False):
+def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, print_lock=None, xcookies=None, delay=None, xcustom_headers=None, basic_auth=None, xdata=None, xredirect=True, tout=10, ssl=False, xproxies=None, digest_auth=None, proxy_auth=None, subdomains=False):
     # Define text formatting for display messages
     found_green = colorize_text("Found: ", "green", "bold")
     found_yellow = colorize_text("Found: ", "yellow", "bold")
     
     # Unpack authentication information
-    if auth is not None:
-        username, password = auth
+    if basic_auth is not None:
+        username, password = basic_auth
+    elif digest_auth is not None:
+        username, password = digest_auth
+    elif proxy_auth is not None:
+        username, password = proxy_auth
 
     try:
         # Ensure 'method' is a valid HTTP method
@@ -24,10 +28,14 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
         # Introduce random sleep to simulate human-like interaction
         random_sleep = random.uniform(0, 8)
         sleep(random_sleep)
-
+        
         # Iterate through the wordlist
         for line in wordlist:
-            url_2 = url + line  # Construct the URL by appending the line from the wordlist
+
+            if subdomains is False:
+                url_2 = url + line  # Construct the URL by appending the line from the wordlist
+            else:
+                url_2 = line
 
             # Introduce a delay if specified
             if delay > 0:
@@ -37,42 +45,52 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
             headers = xcustom_headers if xcustom_headers else {}
             cookies = xcookies if xcookies else {}
             data = xdata if xdata else {}
+            auth = None
 
-            # Handle HTTP Basic Authentication
-            if auth is not None:
+            # Handle HTTP Basic, Digest and Proxy Authentication
+            if basic_auth is not None:
                 auth = HTTPBasicAuth(username, password)
+            elif digest_auth is not None:
+                auth = HTTPDigestAuth(username, password)
+            elif proxy_auth is not None:
+                auth = HTTPProxyAuth(username, password)
 
             # Perform an HTTP request based on the specified method
             if method == 'GET':
+                analysis = colorize_text("Analizing:", "cyan", "bold")
+                with print_lock:
+                    stdout.write("\r" + " " * 70 + "\r") 
+                    stdout.write(f"{analysis} {url_2}")
+                    stdout.flush()      
                 try:
                     if ssl == True:
-                        req = requests.get(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl)
+                        req = requests.get(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl, proxies=xproxies)
                     else:
-                        req = requests.get(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout)
+                        req = requests.get(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, proxies=xproxies)
                 except TimeoutError:
                     break
             elif method == 'POST':
                 try:
                     if ssl == True:
-                        req = requests.post(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl, data=xdata)
+                        req = requests.post(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl, data=xdata, proxies=xproxies)
                     else:
-                        req = requests.post(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, data=xdata)
+                        req = requests.post(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, data=xdata, proxies=xproxies)
                 except TimeoutError:
                     break
             elif method == 'PUT':
                 try:
                     if ssl == True:
-                        req = requests.put(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl, data=xdata)
+                        req = requests.put(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl, data=xdata, proxies=xproxies)
                     else:
-                        req = requests.put(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, data=xdata)
+                        req = requests.put(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, data=xdata, proxies=xproxies)
                 except TimeoutError:
                     break
             elif method == 'DELETE':
                 try:
                     if ssl == True:
-                        req = requests.delete(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl)
+                        req = requests.delete(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, verify=ssl, proxies=xproxies)
                     else:
-                        req = requests.delete(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout)
+                        req = requests.delete(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, proxies=xproxies)
                 except TimeoutError:
                     break
             elif method == 'PATCH':
@@ -83,8 +101,8 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                         req = requests.patch(url_2, cookies=cookies, headers=headers, auth=auth, allow_redirects=xredirect, timeout=tout, data=xdata)
                 except TimeoutError:
                     break
-            
 
+                  
 
             if req.status_code == 200:
                 num = colorize_text("200", "green")  # Format the status code "200" in green
@@ -180,18 +198,8 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                 else:
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2} [403]")
-
-            elif req.status_code == 404:
-                num = colorize_text("404", "red")
-                analysis = colorize_text("Analizing:", "cyan", "bold")
-                with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r") 
-                    stdout.write(f"{analysis} {url_2}")
-                    stdout.flush()
-
             elif req.status_code == 500:
                 num = colorize_text("500", "red")
-                analysis = colorize_text("Analizing:", "cyan", "bold")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Internal Server Error','red','bold')}]\n")  # Display the found URL with status code
@@ -206,7 +214,6 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
             elif req.status_code == 502:
                 num = colorize_text("502", "red")
-                analysis = colorize_text("Analizing:", "cyan", "bold")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Bad Gateway','red','bold')}]\n")
@@ -222,7 +229,6 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
             elif req.status_code == 503:
                 num = colorize_text("503", "red")
-                analysis = colorize_text("Analizing:", "cyan", "bold")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Service Unavailable','red','bold')}]\n")
