@@ -12,10 +12,8 @@ import datetime
 import argparse
 import threading
 
-
 def is_valid_extension(extension):
     return match(r'^\.\w+$', extension)
-
 
 # Function to delete an existing file if it exists and create a new empty file in its place
 def delete_and_create_empty_file(fpath):
@@ -164,8 +162,6 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
         except ValueError:
             print(colorize_text("Error: --data needs some data in format (example=example) to work", "red"))
             exit()
-
-
 
     if proxies is not None:
         if len(proxies) != 0:
