@@ -131,18 +131,30 @@ def generate_subdomain_combinations(url, txt_file):
     with open(txt_file, 'r') as file:
         subdomains = file.read().splitlines()
 
-    if url.startswith("http://"):
+    if url[7:] == "http://":
         url_prefix = "http://"
         url = url[len(url_prefix):]
-    elif url.startswith("https://"):
+    elif url[8:] == "https://":
         url_prefix = "https://"
         url = url[len(url_prefix):]
-    elif url.startswith("ftp://"):
+    elif url[6:] == "ftp://":
         url_prefix = "ftp://"
         url = url[len(url_prefix):]
-    elif url.startswith("ftps://"):
+    elif url[7:] == "ftps://":
         url_prefix = "ftps://"
         url = url[len(url_prefix):]
+    elif url.startswith("http://www"):
+        url_prefix = "http://"
+        url = url[(len(url_prefix)+4):]
+    elif url.startswith("https://www"):
+        url_prefix = "https://"
+        url = url[(len(url_prefix)+4):]
+    elif url.startswith("ftp://www"):
+        url_prefix = "ftp://"
+        url = url[(len(url_prefix)+4):]
+    elif url.startswith("ftps://www"):
+        url_prefix = "ftps://"
+        url = url[(len(url_prefix)+4):]
     else:
         url_prefix = ""
 
