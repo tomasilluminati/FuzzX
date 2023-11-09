@@ -161,3 +161,29 @@ def generate_subdomain_combinations(url, txt_file):
     combinations = [f"{url_prefix}{subdomain}.{url}" for subdomain in subdomains]
 
     return combinations
+
+def append_lines_to_file(file_path, lines_to_add):
+    try:
+        with open(file_path, 'a') as file:
+            for line in lines_to_add:
+                file.write(line + '\n')
+    except Exception as e:
+        pass
+
+def remove_first_characters_inplace(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    modified_lines = []
+
+    for line in lines:
+        if line[:2] in ('*/', '/*', '/*/'):
+            line = line[2:]
+
+        if line.startswith('/'):
+            line = line[1:]
+
+        modified_lines.append(line)
+
+    with open(file_path, 'w') as file:
+        file.writelines(modified_lines)
