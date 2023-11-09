@@ -7,7 +7,8 @@ from modules.functions_2 import *
 from modules.banners_and_style import *
 from sys import exit, argv
 from shutil import copy
-from re import match
+from re import match, findall
+from requests import get
 import datetime
 import argparse
 import threading
@@ -31,7 +32,7 @@ def delete_and_create_empty_file(fpath):
 
 
 # Main function
-def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, basic_auth=None, data=None, xredirect=True, tout=10, ssl=False, proxies=None, digest_auth=None, proxy_auth=None, subdomains=False, only=None):
+def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, basic_auth=None, data=None, xredirect=True, tout=10, ssl=False, proxies=None, digest_auth=None, proxy_auth=None, subdomains=False, only=None, robots=False):
     
     if xredirect is True:
         xredirect = False
@@ -46,6 +47,35 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     xdata = {}
     xproxies = {}
 
+
+
+    # Check the provided URL or prompt for one
+    if url is not None:
+        url = check_url(url)
+    else:
+        url = input(colorize_text("\n[-] Insert the root URL (https://example.com/)\n\n>>> ", "cyan"))
+        url = check_url(url)
+
+
+    if robots == True:
+        
+        try:
+            delete_and_create_empty_file("./scanning/robots.txt")
+            robots_txt = get(url+"robots.txt")
+            
+            robots_txt = robots_txt.text
+            allow_lines = findall(r'Allow:\s*([^\s]+)', robots_txt)
+            disallow_lines = findall(r'Disallow:\s*([^\s]+)', robots_txt)
+            append_lines_to_file("./scanning/robots.txt", allow_lines)
+            append_lines_to_file("./scanning/robots.txt", disallow_lines)
+            remove_first_characters_inplace("./scanning/robots.txt")
+            wordlist = "./scanning/robots.txt"
+
+        except:
+            print(colorize_text("Error: Error creating robots.txt file for scanning", "red"))
+            exit()
+
+
     if only is not None:
         if len(only) > 0:
 
@@ -56,7 +86,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             except:
                 only = only
 
-    if files is False:
+    if files is False and robots is False:
         if subdomains is not False:
 
             if subdomains is True:
@@ -73,7 +103,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
                     exit()
     else:
         if subdomains is not False:
-            print(colorize_text("Error: You can only use --files mode or --subdomains mode", "red"))
+            print(colorize_text("Error: You can only use --files mode or --subdomains mode or --robots mode", "red"))
             exit()
 
 
@@ -211,12 +241,6 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
 
     scanning_path = "./scanning/scanning.txt"
 
-    # Check the provided URL or prompt for one
-    if url is not None:
-        url = check_url(url)
-    else:
-        url = input(colorize_text("\n[-] Insert the root URL (https://example.com/)\n\n>>> ", "cyan"))
-        url = check_url(url)
 
     # Delete and create an empty file for scanning
     delete_and_create_empty_file("./scanning/scanning.txt")
@@ -307,11 +331,17 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     print(colorize_text("\nURL: ", "cyan", "bold")+colorize_text(f"{url}","white","bold"))
 
     if files == True:
-        print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"FILES","white","bold"))
+        if robots is True:
+            print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"FILES (ROBOTS)","white","bold"))
+        else:
+            print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"FILES","white","bold"))
     elif files != True and subdomains is True:
         print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"SUBDOMAINS","white","bold"))
     else:
-        print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"DIR","white","bold"))
+        if robots == True:
+            print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"DIR (ROBOTS)","white","bold"))
+        else:
+            print(colorize_text("\nFUZZ TYPE: ", "cyan", "bold")+colorize_text(f"DIR","white","bold"))
     
     print(colorize_text("\nTHREADS: ", "cyan", "bold")+colorize_text(f"{total_threads}","white","bold"))
     if cookies is not None:
@@ -377,6 +407,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     remove("./scanning/scanning.txt")
     remove("./scanning/scanning_2.txt")
     rename("./scanning/scanning_3.txt", "./scanning/scanning.txt")
+    remove("./scanning/robots.txt")
 
     result = count_lines_in_file("./scanning/scanning.txt")
     
@@ -440,6 +471,7 @@ if __name__ == "__main__":
     parser.add_argument("--proxy-auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
     parser.add_argument("--subdomains", nargs='?', const=True, type=str, default=False, help="Allows fuzzing by subdomains <Path to subdomains list (Optional)>")
     parser.add_argument("--only", required=False, help="Add the status codes you want to display separated by (,)", type=str, nargs="*")
+    parser.add_argument('--robots', action='store_true', default=False, help="Check the SSL certificate")
     args = parser.parse_args()
 
     # Get argument values and run the main function
@@ -464,6 +496,7 @@ if __name__ == "__main__":
     proxy_auth = args.proxy_auth
     subdomains = args.subdomains
     only = args.only
+    robots = args.robots
     
 
-    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, basic_auth, data, xredirect, tout, ssl, proxies, digest_auth, proxy_auth, subdomains, only)
+    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, basic_auth, data, xredirect, tout, ssl, proxies, digest_auth, proxy_auth, subdomains, only, robots)
