@@ -28,7 +28,7 @@ To use FuzzX, follow these simple steps:
 3. Run the tool with the following command:
 
    ```bash
-   python fuzzX.py -u <target_url> [-w <wordlist>] [-oN <output_file>] [-t <threads>] [-hm <http_method>] [--data <data=data>] [-owc] [--files] [-ex] [--cookies <example=example>] [-d or --delay <int>] [-ch <example=example>] [--auth <username,password>] [-no-redirect] [--timeout <int>] [--ssl] [--basic-auth <username,password>] [--digest-auth <username,password>] [--proxy-auth <username,password>] [--domains <path>] [--proxy <ftp/http/https://proxy:port>]
+   python fuzzX.py -u <target_url> [-w <wordlist>] [-oN <output_file>] [-t <threads>] [-hm <http_method>] [--data <data=data>] [-owc] [--files] [-ex] [--cookies <example=example>] [-d or --delay <int>] [-ch <example=example>] [--auth <username,password>] [-no-redirect] [--timeout <int>] [--ssl] [--basic-auth <username,password>] [--digest-auth <username,password>] [--proxy-auth <username,password>] [--domains <path>] [--proxy <ftp/http/https://proxy:port>] [--only <200,201,204,400,401,403,404,500,502,503/> or <all>]
    ```
 
    - `-w`: Path to the wordlist file (.txt). (If not provided, the default wordlist will be used.)
@@ -51,6 +51,7 @@ To use FuzzX, follow these simple steps:
    - `--digest-auth`: Add credentials for authentication in the format user,password separated by commas (,). This argument is used for authentication using the Digest method (Optional).
    - `--proxy-auth`: Add credentials for proxy authentication in the format user,password separated by commas (,) (Optional).
    - `--subdomains`: Allows fuzzing by subdomains. You can provide an optional path to the subdomains list file. If a path is provided, the program will use those subdomains for fuzzing (Optional).
+   - `--only`: Specifies which status codes to display, by default all are activated except 404
 
 
 4. Adjust the tool's settings to suit your needs and start the directory brute force attack.
@@ -63,6 +64,7 @@ To use FuzzX, follow these simple steps:
 - POST, PUT and PATCH support data addition.
 - Customizable request time intervals.
 - Export scan results to a file.
+- Filter by status code
 - Colorized output for easy readability.
 - Option to add cookies to requests.
 - Option to add Custom Headers to requests.
