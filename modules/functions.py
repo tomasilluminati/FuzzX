@@ -62,7 +62,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
             if method == 'GET':
                 analysis = colorize_text("Analizing:", "cyan", "bold")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r") 
+                    stdout.write("\r" + " " * 75 + "\r") 
                     stdout.write(f"{analysis} {url_2}")
                     stdout.flush()      
                 try:
@@ -112,11 +112,11 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                 with print_lock:
 
                     if auth is not None:
-                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
                         stdout.write(f"{found_green}{url_2} [{num}] {colorize_text('[Valid Authentication]', 'green', 'bold')}\n")  # Display the found URL with status code
                         stdout.write("\n")  # Add an empty line
                     else:
-                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
                         stdout.write(f"{found_green}{url_2} [{num}]\n")  # Display the found URL with status code
                         stdout.write("\n")  # Add an empty line
                 if not owc:
@@ -133,11 +133,11 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                 num = colorize_text("201", "green")
                 with print_lock:
                     if auth is not None:
-                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
                         stdout.write(f"{found_green}{url_2} [{num}] {colorize_text('[Created][Valid Authentication]', 'green', 'bold')}\n")  # Display the found URL with status code
                         stdout.write("\n")  # Add an empty line
                     else:
-                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
                         stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Created','red','bold')}]\n")  # Display the found URL with status code
                         stdout.write("\n")  # Add an empty line
                 if owc == False:
@@ -152,11 +152,11 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                 num = colorize_text("204", "green")
                 with print_lock:
                     if auth is not None:
-                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
                         stdout.write(f"{found_green}{url_2} [{num}] {colorize_text('[No Content][Valid Authentication]', 'green', 'bold')}\n")  # Display the found URL with status code
                         stdout.write("\n")  # Add an empty line
                     else:
-                        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                        stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
                         stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('No Content','green','bold')}]\n")  # Display the found URL with status code
                         stdout.write("\n")  # Add an empty line
                 if owc == False:
@@ -166,17 +166,25 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2} [204]")
                     
-            elif req.status_code == 400:
+            elif req.status_code == 400 and str(req.status_code) in only:
+                num = colorize_text("400", "yellow")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")
-                    stdout.write(f"{analysis} {url_2}")
-                    stdout.flush()
+                    stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
+                    stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Bad Request','red','bold')}]\n")  # Display the found URL with status code
+                    stdout.write("\n")  # Add an empty line
+                    stdout.flush() 
+                if owc == False:
+                    with open(output_file, 'a') as file:
+                        file.write(f"\n{url_2}")
+                else:
+                    with open(output_file, 'a') as file:
+                        file.write(f"\n{url_2} [400]")
 
 
             elif (req.status_code == 401 and only is None) or (req.status_code == 401 and only[0] == 1) or (req.status_code == 401 and str(req.status_code) in only):
                 num = colorize_text("401", "yellow")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                    stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Unauthorized','red','bold')}]\n")  # Display the found URL with status code
                     stdout.write("\n")  # Add an empty line
                     stdout.flush() 
@@ -191,7 +199,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                 num = colorize_text("403", "yellow")
                 
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                    stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Forbidden','red','bold')}]\n")  # Display the found URL with status code
                     stdout.write("\n")  # Add an empty line
                     stdout.flush() 
@@ -207,7 +215,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
             elif req.status_code == 404 and str(req.status_code) in only:
                 num = colorize_text("404", "yellow")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
+                    stdout.write("\r" + " " * 75 + "\r")  # Clear the console line 
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Not Found','red','bold')}]\n")  # Display the found URL with status code
                     stdout.write("\n")  # Add an empty line
                     stdout.flush() 
@@ -221,7 +229,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
             elif (req.status_code == 500 and only is None) or (req.status_code == 500 and only[0] == 1) or (req.status_code == 500 and str(req.status_code) in only):
                 num = colorize_text("500", "red")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")
+                    stdout.write("\r" + " " * 75 + "\r")
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Internal Server Error','red','bold')}]\n")  # Display the found URL with status code
                     stdout.write("\n")  # Add an empty line
                     stdout.flush() 
@@ -235,7 +243,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
             elif (req.status_code == 502 and only is None) or (req.status_code == 502 and only[0] == 1) or (req.status_code == 502 and str(req.status_code) in only):
                 num = colorize_text("502", "red")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")
+                    stdout.write("\r" + " " * 75 + "\r")
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Bad Gateway','red','bold')}]\n")
                     stdout.write("\n")
                     stdout.flush()            
@@ -250,7 +258,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
             elif (req.status_code == 503 and only is None) or (req.status_code == 503 and only[0] == 1) or (req.status_code == 503 and str(req.status_code) in only):
                 num = colorize_text("503", "red")
                 with print_lock:
-                    stdout.write("\r" + " " * 70 + "\r")
+                    stdout.write("\r" + " " * 75 + "\r")
                     stdout.write(f"{found_yellow}{url_2} [{num}] [{colorize_text('Service Unavailable','red','bold')}]\n")
                     stdout.write("\n")
                     stdout.flush()
@@ -262,8 +270,8 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                         file.write(f"\n{url_2} [503]")
 
     except requests.exceptions.TooManyRedirects:
-        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line
+        stdout.write("\r" + " " * 75 + "\r")  # Clear the console line
     except requests.exceptions.RequestException as e:
-        stdout.write("\r" + " " * 70 + "\r")  # Clear the console line
+        stdout.write("\r" + " " * 75 + "\r")  # Clear the console line
     except ValueError as e:
         print("Error:", e)  # Display a general error message
