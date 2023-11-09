@@ -31,7 +31,7 @@ def delete_and_create_empty_file(fpath):
 
 
 # Main function
-def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, basic_auth=None, data=None, xredirect=True, tout=10, ssl=False, proxies=None, digest_auth=None, proxy_auth=None, subdomains=False):
+def main(wordlist=None, url=None, export=None, total_threads=None, http_method=None, owc=False, files=False, extensions=None, cookies=None, delay=None, custom_headers=None, basic_auth=None, data=None, xredirect=True, tout=10, ssl=False, proxies=None, digest_auth=None, proxy_auth=None, subdomains=False, only=None):
     
     if xredirect is True:
         xredirect = False
@@ -46,6 +46,15 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     xdata = {}
     xproxies = {}
 
+    if only is not None:
+        if len(only) > 0:
+
+            if only[0].lower() == "all":
+                only = ["200,201,204,400,401,403,404,500,502,503"]
+            try:
+                only = only[0].split(",")
+            except:
+                only = only
 
     if files is False:
         if subdomains is not False:
@@ -354,7 +363,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
 
     for part in parts:
         # Create a thread to perform URL fuzzing on a part of the word list
-        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, basic_auth, xdata, xredirect, tout, ssl, xproxies, digest_auth, proxy_auth, subdomains))
+        thread = threading.Thread(target=fuzz, args=(part, url, scanning_path, http_method, owc, print_lock, xcookies, delay, xcustom_headers, basic_auth, xdata, xredirect, tout, ssl, xproxies, digest_auth, proxy_auth, subdomains, only))
         threads.append(thread) # Add the thread to the list of threads
 
     for thread in threads:
@@ -430,6 +439,7 @@ if __name__ == "__main__":
     parser.add_argument("--digest-auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
     parser.add_argument("--proxy-auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
     parser.add_argument("--subdomains", nargs='?', const=True, type=str, default=False, help="Allows fuzzing by subdomains <Path to subdomains list (Optional)>")
+    parser.add_argument("--only", required=False, help="Add the status codes you want to display separated by (,)", type=str, nargs="*")
     args = parser.parse_args()
 
     # Get argument values and run the main function
@@ -453,6 +463,7 @@ if __name__ == "__main__":
     digest_auth = args.digest_auth
     proxy_auth = args.proxy_auth
     subdomains = args.subdomains
+    only = args.only
     
 
-    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, basic_auth, data, xredirect, tout, ssl, proxies, digest_auth, proxy_auth, subdomains)
+    main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, basic_auth, data, xredirect, tout, ssl, proxies, digest_auth, proxy_auth, subdomains, only)
