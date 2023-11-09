@@ -52,7 +52,7 @@ To use FuzzX, follow these simple steps:
    - `--proxy-auth`: Add credentials for proxy authentication in the format user,password separated by commas (,) (Optional).
    - `--subdomains`: Allows fuzzing by subdomains. You can provide an optional path to the subdomains list file. If a path is provided, the program will use those subdomains for fuzzing (Optional).
    - `--only`: Specifies which status codes to display, by default all are activated except 404
-   - `--robots`:: Analyze the robots.txt file and fuzz it (The program adds the link to the file automatically, it is not necessary to add it to the url, duplicates will be generated)
+   - `--robots`: Analyze the robots.txt file and fuzz it (The program adds the link to the file automatically, it is not necessary to add it to the url, duplicates will be generated)
 
 
 4. Adjust the tool's settings to suit your needs and start the directory brute force attack.
