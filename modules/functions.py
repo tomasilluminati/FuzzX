@@ -12,6 +12,9 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
     found_green = colorize_text("Found: ", "green", "bold")
     found_yellow = colorize_text("Found: ", "yellow", "bold")
     
+    if only == None:
+        only = [1]
+
     # Unpack authentication information
     if basic_auth is not None:
         username, password = basic_auth
@@ -104,7 +107,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
                   
 
-            if (req.status_code == 200 and only is None) or (req.status_code == 200 and str(req.status_code) in only):
+            if (req.status_code == 200 and only is None) or (req.status_code == 200 and only[0] == 1) or (req.status_code == 200 and str(req.status_code) in only):
                 num = colorize_text("200", "green")  # Format the status code "200" in green
                 with print_lock:
 
@@ -125,7 +128,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
 
  # Similar blocks for other HTTP status codes (201, 204, 400, 401, 403, 404, 500, 502, 503)
 
-            elif (req.status_code == 201 and only is None) or (req.status_code == 201 and str(req.status_code) in only):
+            elif (req.status_code == 201 and only is None) or (req.status_code == 201 and only[0] == 1) or (req.status_code == 201 and str(req.status_code) in only):
 
                 num = colorize_text("201", "green")
                 with print_lock:
@@ -144,7 +147,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2} [201]")
 
-            elif (req.status_code == 204 and only is None) or (req.status_code == 204 and str(req.status_code) in only):
+            elif (req.status_code == 204 and only is None) or (req.status_code == 204 and only[0] == 1) or (req.status_code == 204 and str(req.status_code) in only):
 
                 num = colorize_text("204", "green")
                 with print_lock:
@@ -170,7 +173,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                     stdout.flush()
 
 
-            elif (req.status_code == 401 and only is None) or (req.status_code == 401 and str(req.status_code) in only):
+            elif (req.status_code == 401 and only is None) or (req.status_code == 401 and only[0] == 1) or (req.status_code == 401 and str(req.status_code) in only):
                 num = colorize_text("401", "yellow")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")  # Clear the console line 
@@ -184,7 +187,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2} [401]")
             
-            elif (req.status_code == 403 and only is None) or (req.status_code == 403 and str(req.status_code) in only):
+            elif (req.status_code == 403 and only is None) or (req.status_code == 403 and only[0] == 1) or (req.status_code == 403 and str(req.status_code) in only):
                 num = colorize_text("403", "yellow")
                 
                 with print_lock:
@@ -215,7 +218,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2} [404]")
 
-            elif (req.status_code == 500 and only is None) or (req.status_code == 500 and str(req.status_code) in only):
+            elif (req.status_code == 500 and only is None) or (req.status_code == 500 and only[0] == 1) or (req.status_code == 500 and str(req.status_code) in only):
                 num = colorize_text("500", "red")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
@@ -229,7 +232,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                     with open(output_file, 'a') as file:
                         file.write(f"\n{url_2} [500]")
 
-            elif (req.status_code == 502 and only is None) or (req.status_code == 502 and str(req.status_code) in only):
+            elif (req.status_code == 502 and only is None) or (req.status_code == 502 and only[0] == 1) or (req.status_code == 502 and str(req.status_code) in only):
                 num = colorize_text("502", "red")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
@@ -244,7 +247,7 @@ def fuzz(wordlist=None, url=None, output_file=None, method='GET', owc=False, pri
                         file.write(f"\n{url_2} [502]")
 
 
-            elif (req.status_code == 503 and only is None) or (req.status_code == 503 and str(req.status_code) in only):
+            elif (req.status_code == 503 and only is None) or (req.status_code == 503 and only[0] == 1) or (req.status_code == 503 and str(req.status_code) in only):
                 num = colorize_text("503", "red")
                 with print_lock:
                     stdout.write("\r" + " " * 70 + "\r")
