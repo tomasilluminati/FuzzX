@@ -48,7 +48,6 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     xproxies = {}
 
 
-
     # Check the provided URL or prompt for one
     if url is not None:
         url = check_url(url)
