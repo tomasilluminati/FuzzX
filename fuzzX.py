@@ -471,7 +471,7 @@ if __name__ == "__main__":
     parser.add_argument("--proxy-auth", required=False, help="Add credentials for authentication separated by (,) <user,password>", type=str, nargs="*")
     parser.add_argument("--subdomains", nargs='?', const=True, type=str, default=False, help="Allows fuzzing by subdomains <Path to subdomains list (Optional)>")
     parser.add_argument("--only", required=False, help="Add the status codes you want to display separated by (,)", type=str, nargs="*")
-    parser.add_argument('--robots', action='store_true', default=False, help="Check the SSL certificate")
+    parser.add_argument('--robots', action='store_true', default=False, help="Analyze the robots.txt file and fuzz it")
     args = parser.parse_args()
 
     # Get argument values and run the main function
