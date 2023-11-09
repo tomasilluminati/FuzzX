@@ -79,7 +79,6 @@ To use FuzzX, follow these simple steps:
   
 
 
-
 ## Disclaimer
 
 This program is provided as-is, with no warranties of any kind. The author and the code provider assume ZERO responsibility for any direct or indirect damages that may arise from the use of this program.
