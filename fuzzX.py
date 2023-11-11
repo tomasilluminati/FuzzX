@@ -230,8 +230,7 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             exit()
 
     
-    # Show Main Banner
-    init_banner()
+    
 
     if http_method is None:
         http_method = 'GET'
@@ -251,18 +250,30 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             if wordlist is not None:
                 wordlist_len = count_lines_in_file(wordlist)
                 if total_threads > wordlist_len:
-                    parts = split_file_into_parts(wordlist, wordlist_len)
-                    total_threads = wordlist_len
+                    try:
+                        parts = split_file_into_parts(wordlist, wordlist_len)
+                        total_threads = wordlist_len
+                    except:
+                        print(colorize_text("Error: 0 items in the wordlist","red"))
+                        exit()
                 else:
                     parts = split_file_into_parts(wordlist, total_threads)
             else:
                 wordlist = "./wordlists/default.txt"
                 wordlist_len = count_lines_in_file(wordlist)
                 if total_threads > wordlist_len:
-                    parts = split_file_into_parts(wordlist, wordlist_len)
-                    total_threads = wordlist_len
+                    try:
+                        parts = split_file_into_parts(wordlist, wordlist_len)
+                        total_threads = wordlist_len
+                    except:
+                        print(colorize_text("Error: 0 items in the wordlist","red"))
+                        exit()
                 else:
-                    parts = split_file_into_parts(wordlist, total_threads)
+                    try:
+                        parts = split_file_into_parts(wordlist, total_threads)
+                    except:
+                        print(colorize_text("Error: 0 items in the wordlist","red"))
+                        exit()
 
         else:
             flag = 0
@@ -288,7 +299,11 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
 
                 write_list_to_file(combined, "./wordlists/f_dict_w_ex.txt")
 
-                parts = split_file_into_parts("./wordlists/f_dict_w_ex.txt", total_threads)
+                try:
+                    parts = split_file_into_parts("./wordlists/f_dict_w_ex.txt", total_threads)
+                except:
+                        print(colorize_text("Error: 0 items in the wordlist","red"))
+                        exit()
 
                 remove("./wordlists/f_dict_w_ex.txt")
             else:
@@ -303,7 +318,12 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
 
                 write_list_to_file(combined, "./wordlists/f_dict_w_ex.txt")
 
-                parts = split_file_into_parts("./wordlists/f_dict_w_ex.txt", total_threads)
+                try:
+                    parts = split_file_into_parts("./wordlists/f_dict_w_ex.txt", total_threads)
+                except:
+                        print(colorize_text("Error: 0 items in the wordlist","red"))
+                        exit()
+
 
                 remove("./wordlists/f_dict_w_ex.txt")
 
@@ -315,14 +335,19 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
             parts = split_file_into_parts(wordlist, wordlist_len)
             total_threads = wordlist_len
         else:
-            parts = split_file_into_parts(wordlist, total_threads)
+            try:
+                parts = split_file_into_parts(wordlist, total_threads)
+            except:
+                    print(colorize_text("Error: 0 items in the wordlist","red"))
+                    exit()
 
             remove("./scanning/sub_dom_tmp.txt")
 
         wordlist = "./wordlists/subdomains.txt"
 
     
-
+    # Show Main Banner
+    init_banner()
 
     print(colorize_text("\n                        [!] Information\n", "yellow", "bold"))
     print(colorize_text("\nSTART TIME: ", "cyan", "bold")+colorize_text(f"{formatted_datetime}","white","bold"))
