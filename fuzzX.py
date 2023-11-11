@@ -406,7 +406,8 @@ def main(wordlist=None, url=None, export=None, total_threads=None, http_method=N
     remove("./scanning/scanning.txt")
     remove("./scanning/scanning_2.txt")
     rename("./scanning/scanning_3.txt", "./scanning/scanning.txt")
-    remove("./scanning/robots.txt")
+    if robots is True:
+        remove("./scanning/robots.txt")
 
     result = count_lines_in_file("./scanning/scanning.txt")
     
