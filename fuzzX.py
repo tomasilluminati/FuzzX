@@ -523,5 +523,5 @@ if __name__ == "__main__":
     only = args.only
     robots = args.robots
     
-
+#Run the Main Function
     main(wordlist, url, export, threads, http_method, owc, files, extensions, cookies, delay, custom_headers, basic_auth, data, xredirect, tout, ssl, proxies, digest_auth, proxy_auth, subdomains, only, robots)
